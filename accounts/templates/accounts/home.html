@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLD SCHOOL - Trang chủ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Tông nền hồng phấn chủ đạo của toàn trang */
+        body {
+            background-color: #fbeceb; /* Màu hồng y hệt Figma */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            color: #333;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            display: flex;
+            background: white;
+            padding: 15px 40px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo { color: #d32f2f; font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+        .logo .dot { width: 18px; height: 18px; background: #d32f2f; border-radius: 50%; display: inline-block; }
+
+        .nav { display: flex; gap: 30px; font-weight: 600; color: #888; font-size: 14px;}
+        .nav .active { color: #d32f2f; }
+        .nav span { cursor: pointer; transition: 0.2s; }
+        .nav span:hover { color: #d32f2f; }
+
+        .user-section { display: flex; gap: 20px; align-items: center; }
+        .search-bar { background: #f5f5f5; border: none; padding: 8px 15px; border-radius: 20px; outline: none; width: 200px; font-size: 13px;}
+        .avatar { width: 32px; height: 32px; background: #333; border-radius: 50%; }
+        .cart-icon { font-size: 20px; color: #333; position: relative; cursor: pointer;}
+        .cart-badge { position: absolute; top: -6px; right: -8px; background: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold;}
+
+        /* --- BANNER --- */
+        .banner-container { width: 100%; margin: 0 auto; display: block; }
+        .banner-img { width: 100%; height: auto; object-fit: cover; display: block;}
+
+        /* --- TIÊU ĐỀ BST --- */
+        .section-title { text-align: center; margin: 40px 0; font-size: 24px; font-weight: bold; }
+
+        /* --- BỐ CỤC CHÍNH (CỘT BỘ LỌC + LƯỚI SẢN PHẨM) --- */
+        .main-container { display: flex; max-width: 1200px; margin: 0 auto; padding: 0 20px; gap: 50px; }
+
+        /* --- CỘT BỘ LỌC (SIDEBAR) --- */
+        .sidebar { width: 200px; flex-shrink: 0; }
+        .sidebar-title { font-size: 16px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 10px;}
+        .filter-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            color: #777;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* --- LƯỚI SẢN PHẨM --- */
+        .product-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-bottom: 60px;}
+        .product-card { background: transparent; cursor: pointer; }
+
+        .product-img-box {
+            background-color: white; /* Nền trắng bo góc cho từng ảnh */
+            border-radius: 15px;
+            overflow: hidden;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .product-card:hover .product-img-box { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Chấm màu (Swatches) */
+        .color-swatches { display: flex; gap: 6px; margin: 10px 0 5px 0; height: 12px;}
+        .swatch { width: 20px; height: 10px; border-radius: 5px; }
+
+        .product-name { font-weight: bold; font-size: 14px; margin: 8px 0 4px 0; color: #111;}
+        .product-price { font-size: 13px; font-weight: bold; color: #333; margin: 0;}
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo"><span class="dot"></span> OLD SCHOOL</div>
+        <div class="nav">
+            <span class="active">Tổng quan</span>
+            <span>Sản phẩm</span>
+            <span>Đơn hàng</span>
+            <span>Bộ sưu tập</span>
+            <span>Tết sale</span>
+        </div>
+        <div class="user-section">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
+            <div class="avatar"></div>
+            <div class="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge">7</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="banner-container">
+        <img class="banner-img" src="/static/accounts/banner.png" alt="Banner Disney Tết">
+    </div>
+
+    <div class="section-title">BST TẾT</div>
+
+    <div class="main-container">
+
+        <div class="sidebar">
+            <div class="sidebar-title">Bộ lọc</div>
+            <div class="filter-item">Kích thước <i class="fas fa-chevron-down" style="font-size: 10px;"></i></div>
+            <div class="filter-item">Màu sắc <i class="fas fa-chevron-down" style="font-size: 10px;"></i></div>
+            <div class="filter-item">Chất liệu <i class="fas fa-chevron-down" style="font-size: 10px;"></i></div>
+            <div class="filter-item">Giá <i class="fas fa-chevron-down" style="font-size: 10px;"></i></div>
+        </div>
+
+        <div class="product-grid">
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp1.png" alt="Váy đen"></div>
+                <div class="color-swatches"></div> <div class="product-name">Váy đen</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp2.png" alt="Đầm đỏ đô"></div>
+                <div class="color-swatches"></div>
+                <div class="product-name">Đầm đỏ đô</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp3.png" alt="Váy công chúa"></div>
+                <div class="color-swatches"></div>
+                <div class="product-name">Váy công chúa</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp4.png" alt="Đầm công sở"></div>
+                <div class="color-swatches"></div>
+                <div class="product-name">Đầm công sở</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp5.png" alt="Áo hoodie"></div>
+                <div class="color-swatches">
+                    <div class="swatch" style="background-color: #7b1fa2;"></div>
+                    <div class="swatch" style="background-color: #e0e0e0;"></div>
+                </div>
+                <div class="product-name">Áo hoodie</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp6.png" alt="Áo thun"></div>
+                <div class="color-swatches">
+                    <div class="swatch" style="background-color: #d32f2f;"></div>
+                    <div class="swatch" style="background-color: #e0e0e0;"></div>
+                    <div class="swatch" style="background-color: #b0bec5;"></div>
+                </div>
+                <div class="product-name">Áo thun</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp7.png" alt="Áo polo"></div>
+                <div class="color-swatches">
+                    <div class="swatch" style="background-color: #e0e0e0;"></div>
+                    <div class="swatch" style="background-color: #b0bec5;"></div>
+                    <div class="swatch" style="background-color: #90a4ae;"></div>
+                </div>
+                <div class="product-name">Áo polo</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp8.png" alt="Áo thun"></div>
+                <div class="color-swatches">
+                    <div class="swatch" style="background-color: #e0e0e0;"></div>
+                </div>
+                <div class="product-name">Áo thun</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-img-box"><img class="product-img" src="/static/accounts/sp9.png" alt="Chân váy"></div>
+                <div class="color-swatches"></div>
+                <div class="product-name">Chân váy</div>
+                <div class="product-price">500.000đ</div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

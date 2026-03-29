@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Old School</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="left-panel">
+            <div class="branding-content">
+                <div class="logo-circle">OS</div>
+                <h1 class="brand-title">Old School</h1>
+                <h2 class="brand-subtitle">Fashion Style</h2>
+                <p class="brand-desc">Phong cách thời trang cổ điển, thanh lịch và sang trọng</p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="form-container">
+                <h1 class="main-title">ĐĂNG NHẬP</h1>
+                <p class="subtitle">Vui lòng đăng nhập !</p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div style="padding: 10px; margin-bottom: 15px; border-radius: 4px; color: #fff; font-size: 14px; text-align: center;
+                            {% if message.tags == 'error' %} background-color: #D32F2F; {% else %} background-color: #4CAF50; {% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-row">
+                            <label>Mật khẩu</label>
+                            <a href="{% url 'password_reset' %}" class="forgot-pw">Quên mật khẩu?</a>
+                        </div>
+                        <input type="password" name="password" placeholder="Password" required>
+                    </div>
+
+                    <button type="submit" class="btn-login">Đăng nhập</button>
+                </form>
+
+                <hr class="divider">
+
+                <p class="register-text">
+                    Bạn chưa có tài khoản? <a href="{% url 'register' %}" class="register-link">Đăng ký ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

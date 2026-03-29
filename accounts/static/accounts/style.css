@@ -1,0 +1,177 @@
+/* --- Reset & Font --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-wrapper {
+    display: flex;
+    width: 950px;
+    min-height: 550px;
+    background-color: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 8px; /* Bo góc nhẹ cho toàn bộ khung */
+    overflow: hidden;
+}
+
+/* --- BÊN TRÁI: NỀN ĐỎ TOÀN TẬP --- */
+.left-panel {
+    flex: 0 0 45%;
+    background-color: #D32F2F; /* Màu đỏ chủ đạo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.branding-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Vẽ logo tròn OS bằng CSS */
+.logo-circle {
+    width: 90px;
+    height: 90px;
+    background-color: #FFFFFF;
+    color: #D32F2F;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 34px;
+    font-weight: 900;
+    margin-bottom: 25px;
+}
+
+.brand-title {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.brand-subtitle {
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 50px; /* Tạo khoảng trống trước dòng mô tả */
+}
+
+.brand-desc {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* --- BÊN PHẢI: FORM ĐĂNG NHẬP --- */
+.right-panel {
+    flex: 0 0 55%;
+    background-color: #F5EAE9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    width: 72%;
+}
+
+.main-title {
+    color: #D32F2F;
+    font-size: 44px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    margin-bottom: 22px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-pw {
+    font-size: 13px;
+    color: #D32F2F;
+    text-decoration: none;
+    font-style: italic;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: #D32F2F;
+}
+
+.btn-login {
+    width: 100%;
+    background-color: #D32F2F;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background-color: #b71c1c;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #e0d5d4;
+    margin: 35px 0 25px 0;
+}
+
+.register-text {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+}
+
+.register-link {
+    color: #D32F2F;
+    font-weight: 700;
+    text-decoration: none;
+}
