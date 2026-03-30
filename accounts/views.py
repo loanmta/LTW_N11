@@ -7,13 +7,19 @@ from django.contrib import messages
 # --- XỬ LÝ ĐĂNG NHẬP VÀ PHÂN LUỒNG ---
 def login_view(request):
     if request.method == 'POST':
-        # 1. Hứng dữ liệu từ form (đảm bảo name="" trong HTML là 'email' và 'password')
-        email = request.POST.get('email')
+        # 1. Hứng dữ liệu từ form
+        email_input = request.POST.get('email')
         password = request.POST.get('password')
 
-        # 2. Kiểm tra tài khoản trong Database
-        # Do lúc đăng ký bạn dùng email làm username nên ở đây hàm authenticate cũng dùng username=email
-        user = authenticate(request, username=email, password=password)
+        # 2. Xử lý đăng nhập thông minh bằng Email
+        try:
+            # Tìm xem có user nào sở hữu cái email này không
+            user_obj = User.objects.get(email=email_input)
+            # Nếu có, lấy username thật của người đó để authenticate
+            user = authenticate(request, username=user_obj.username, password=password)
+        except User.DoesNotExist:
+            # Trường hợp khách nhập Username vào ô Email (như cách 1 ở trên) thì vẫn cho qua
+            user = authenticate(request, username=email_input, password=password)
 
         if user is not None:
             # 3. Đăng nhập thành công -> Lưu phiên đăng nhập
@@ -27,11 +33,11 @@ def login_view(request):
                 # Nếu là Khách -> Bay ra màn hình mua sắm Trang chủ
                 return redirect('home')
         else:
-            # Đăng nhập thất bại (Sai email hoặc mật khẩu)
+            # Đăng nhập thất bại
             messages.error(request, "Email hoặc mật khẩu không chính xác!")
             return redirect('login')
 
-    # Nếu là GET request (vừa mới gõ link mở trang) thì hiện form đăng nhập
+    # Nếu là GET request thì hiện form đăng nhập
     return render(request, "accounts/login.html")
 
 

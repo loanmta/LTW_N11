@@ -102,7 +102,9 @@
         </div>
         <div class="user-section">
             <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
-            <div class="avatar"></div>
+            <a href="{% url 'profile' %}" title="Quản lý tài khoản">
+                <div class="avatar" style="cursor: pointer;"></div>
+            </a>
             <div class="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-badge">7</span>

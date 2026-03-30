@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Khách hàng - Old School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #e53935;
+            --bg-pink: #fff5f5;
+            --text-main: #333;
+            --text-muted: #888;
+            --border-color: #EAECF0;
+            --white: #FFFFFF;
+        }
+
+        /* --- RESET Y HỆT DASHBOARD --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-pink); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: var(--text-main); -webkit-font-smoothing: antialiased; }
+        .app-container { width: 100%; min-height: 100vh; }
+
+        /* --- BÊ NGUYÊN CSS HEADER TỪ DASHBOARD SANG --- */
+        .header { display: flex; background: white; padding: 15px 40px; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { color: #e53935; font-weight: 900; font-size: 22px; display: flex; align-items: center; gap: 10px; text-decoration: none;}
+        .logo .dot { width: 24px; height: 24px; background: #e53935; border-radius: 50%; display: inline-block; }
+        .nav { display: flex; gap: 30px; font-weight: 600; color: #888; font-size: 16px;}
+        .nav a { text-decoration: none; color: #888; padding-bottom: 5px; transition: 0.2s;}
+        .nav a:hover { color: #e53935; }
+        .nav .active { color: #e53935; border-bottom: 2px solid #e53935; }
+        .user-section { display: flex; gap: 15px; align-items: center; }
+        .search-bar { background: #f5f5f5; border: none; padding: 10px 20px; border-radius: 20px; outline: none; width: 200px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        .avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; }
+
+        /* --- CSS CHO NỘI DUNG CHÍNH CỦA TRANG KHÁCH HÀNG --- */
+        .main-content { padding: 40px; max-width: 1300px; margin: 0 auto; }
+
+        .page-header { margin-bottom: 32px; }
+        .page-header h1 { font-size: 28px; font-weight: 700; color: #101828; margin-bottom: 8px; }
+        .page-header p { color: var(--text-muted); font-size: 14px; }
+
+        .search-bar-container { background-color: var(--white); padding: 16px 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        .search-input-wrapper { display: flex; align-items: center; gap: 12px; color: #98A2B3; flex: 1; background-color: #F9FAFB; padding: 10px 16px; border-radius: 8px; max-width: 400px;}
+        .search-input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        .search-input-wrapper input::placeholder { color: #98A2B3; }
+
+        .filter-wrapper { display: flex; gap: 16px; align-items: center; }
+        .filter-wrapper .date-filter { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 14px; outline: none; background-color: var(--white); cursor: pointer; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: border-color 0.2s; }
+        .filter-wrapper .date-filter:focus { border-color: var(--primary-red); }
+        .filter-wrapper .filter-btn { padding: 8px 16px; background-color: var(--primary-red); color: var(--white); border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        .filter-wrapper .filter-btn:hover { background-color: #B42318; }
+
+        /* Bảng Khách hàng */
+        .table-container { background-color: var(--white); border-radius: 12px; box-shadow: 0 1px 3px rgba(16, 24, 40, 0.05); margin-bottom: 40px; overflow: hidden; }
+        .customer-table { width: 100%; border-collapse: collapse; }
+        .customer-table th { text-align: left; padding: 20px 32px; font-weight: 600; color: #98A2B3; font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
+        .customer-table td { padding: 20px 32px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .customer-table tr:hover { background-color: #F9FAFB; }
+        .customer-table tr:last-child td { border-bottom: none; }
+
+        .customer-name-wrapper { display: flex; align-items: center; gap: 12px; }
+        .font-medium { font-weight: 600; }
+        .text-main { color: #101828; }
+        .text-muted { color: var(--text-muted); font-size: 14px; font-weight: 500;}
+        .text-center { text-align: center; }
+        .text-red { color: var(--primary-red); font-weight: 600; }
+
+        /* Phân trang */
+        .pagination-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; border-top: 1px solid var(--border-color); }
+        .pagination-info { color: #98A2B3; font-size: 13px; font-weight: 600; text-transform: uppercase;}
+        .pagination-controls { display: flex; align-items: center; gap: 8px; }
+        .page-btn { min-width: 32px; height: 32px; border-radius: 6px; border: none; background-color: transparent; color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        .page-btn:hover { background-color: #F9FAFB; }
+        .page-btn.active { background-color: var(--primary-red); color: var(--white); }
+        .page-dots { color: var(--text-muted); font-weight: 600;}
+        .icon-btn { cursor: pointer; color: #98A2B3; display: flex; align-items: center; justify-content: center; border: none; background: transparent;}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <a href="{% url 'dashboard' %}" class="logo"><span class="dot"></span> OLD SCHOOL</a>
+            <div class="nav">
+                <a href="{% url 'dashboard' %}">Tổng quan</a>
+                <a href="#">Sản phẩm</a>
+                <a href="{% url 'orders' %}">Đơn hàng</a>
+                <a href="#">Báo cáo</a>
+                <a href="{% url 'customers' %}" class="active">Khách hàng</a>
+            </div>
+            <div class="user-section">
+                <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
+                <div class="avatar"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Quản lý Khách hàng</h1>
+                <p>Xem và quản lý danh sách khách hàng của cửa hàng</p>
+            </div>
+
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm theo tên hoặc số điện thoại...">
+                </div>
+                <div class="filter-wrapper">
+                    <input type="date" class="date-filter" aria-label="Lọc theo ngày">
+                    <input type="month" class="date-filter" aria-label="Lọc theo tháng">
+                    <button class="filter-btn">Lọc</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="customer-table">
+                    <thead>
+                        <tr>
+                            <th>Mã KH</th>
+                            <th>Họ và Tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th class="text-center">Tổng đơn</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-muted">#KH0001</td>
+                            <td>
+                                <div class="customer-name-wrapper">
+                                    <span class="font-medium text-main">Nguyễn Minh Khoa</span>
+                                </div>
+                            </td>
+                            <td class="font-medium text-main">hung.nv@email.com</td>
+                            <td class="text-muted">090 123 4567</td>
+                            <td class="font-medium text-center text-main">12</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">#KH0002</td>
+                            <td>
+                                <div class="customer-name-wrapper">
+                                    <span class="font-medium text-main">Trần Thị Thảo</span>
+                                </div>
+                            </td>
+                            <td class="font-medium text-main">thaotran@email.com</td>
+                            <td class="text-muted">091 888 7766</td>
+                            <td class="font-medium text-center text-main">5</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">#KH0003</td>
+                            <td>
+                                <div class="customer-name-wrapper">
+                                    <span class="font-medium text-main">Lê Minh</span>
+                                </div>
+                            </td>
+                            <td class="font-medium text-main">leminh_dev@email.com</td>
+                            <td class="text-muted">098 765 4321</td>
+                            <td class="font-medium text-center text-main">32</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">#KH0004</td>
+                            <td>
+                                <div class="customer-name-wrapper">
+                                    <span class="font-medium text-main">Phạm Thanh</span>
+                                </div>
+                            </td>
+                            <td class="font-medium text-main">pt.thanh@email.com</td>
+                            <td class="text-muted">093 444 5555</td>
+                            <td class="font-medium text-center text-main">2</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">#KH0005</td>
+                            <td>
+                                <div class="customer-name-wrapper">
+                                    <span class="font-medium text-main">Lê Trường Sơn</span>
+                                </div>
+                            </td>
+                            <td class="font-medium text-main">nganngan@email.com</td>
+                            <td class="text-muted">093 254 6765</td>
+                            <td class="font-medium text-center text-main">6</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info">
+                        HIỂN THỊ 5 CỦA 1,248 KHÁCH HÀNG
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="icon-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <span class="page-dots">...</span>
+                        <button class="page-btn">125</button>
+                        <button class="icon-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản - OLD SCHOOL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Đã cập nhật mã màu đỏ mới theo yêu cầu */
+            --primary-color: #D32F2F;
+            --bg-color: #FEF2F2;
+            --text-main: #222222;
+            --text-muted: #888888;
+            --border-color: #EEEEEE;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        /* Header */
+        .header { display: flex; background: white; padding: 15px 40px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { color: #d32f2f; font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .logo .dot { width: 18px; height: 18px; background: #d32f2f; border-radius: 50%; display: inline-block; }
+
+        .nav { display: flex; gap: 30px; font-weight: 600; font-size: 14px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .nav a { text-decoration: none; color: #888; cursor: pointer; transition: 0.2s; }
+        .nav a:hover, .nav .active { color: #d32f2f; }
+        .user-section { display: flex; gap: 20px; align-items: center; }
+        .search-bar { background: #f5f5f5; border: none; padding: 8px 15px; border-radius: 20px; outline: none; width: 200px; font-size: 13px;}
+        .avatar { width: 32px; height: 32px; background: #333; border-radius: 50%; cursor: pointer;}
+        .cart-icon { font-size: 20px; color: #333; position: relative; cursor: pointer;}
+        .cart-badge { position: absolute; top: -6px; right: -8px; background: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold;}
+
+        /* Layout */
+        .page-container {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 40px;
+            min-height: 60vh;
+        }
+
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #111;
+            font-weight: 800;
+        }
+
+        .layout {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 24px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.02);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            color: #999;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 24px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #444;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #FAFAFA;
+        }
+
+        .menu-item.active {
+            background: #FFF5F5;
+            color: var(--primary-color);
+        }
+
+        .menu-item.active span {
+            position: relative;
+        }
+
+        .menu-item.active span::before {
+            content: "•";
+            color: var(--primary-color);
+            font-size: 20px;
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 16px;
+            color: #888;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: #F0F0F0;
+            margin: 15px 24px;
+        }
+
+        /* Main Content View Profile */
+        .main-content {
+            flex: 1;
+        }
+
+        .info-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid #F5F5F5;
+        }
+
+        .card-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px 40px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #222;
+            font-weight: 600;
+        }
+
+        .badge-green {
+            color: #0E9F6E;
+            background: #DEF7EC;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-block;
+            width: max-content;
+        }
+
+        .card-footer {
+            padding: 0 30px 30px 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Edit Profile Full Page View */
+        .edit-profile-view {
+            display: none;
+            justify-content: center;
+            padding-top: 10px;
+        }
+
+        .edit-form-container {
+            width: 100%;
+            max-width: 750px;
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid #F0F0F0;
+        }
+
+        .edit-form-title {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .edit-form-group {
+            margin-bottom: 22px;
+        }
+
+        .edit-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .text-red {
+            color: var(--primary-color);
+        }
+
+        .text-dark {
+            color: #333;
+        }
+
+        .edit-form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #DDD;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            box-sizing: border-box;
+            background: var(--white);
+            transition: border-color 0.2s;
+            color: #222;
+        }
+
+        .edit-form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .edit-form-group input.input-disabled {
+            background: #F8FAFC;
+            color: #A0A0A0;
+            cursor: not-allowed;
+            border-color: #E0E0E0;
+        }
+
+        .edit-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .edit-form-actions .btn-cancel {
+            background: var(--white);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .edit-form-actions .btn-cancel:hover {
+            background: #FFF5F5;
+        }
+
+        .edit-form-actions .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
+        }
+
+        /* General Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Nút màu đỏ (D32F2F) chữ màu trắng */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: #B71C1C; /* Đỏ sậm hơn khi hover chuột */
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: #FFF5F5;
+        }
+
+        /* Success Modal */
+        .success-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px 60px;
+            position: relative;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .modal-overlay.active .success-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .success-icon {
+            font-size: 54px;
+            color: var(--primary-color);
+        }
+
+        .success-message {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111;
+            margin: 0;
+            letter-spacing: -0.3px;
+        }
+
+        /* Password Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: #FFF8F8;
+            border-radius: 16px;
+            width: 480px;
+            padding: 40px;
+            position: relative;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            font-size: 24px;
+            color: #CCC;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #888;
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .modal-subtitle {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .modal-subtitle strong {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .form-group input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px 16px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: var(--white);
+            transition: border-color 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: #AAA;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 14px;
+            font-size: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid #EAEAEA;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            color: #666;
+            font-weight: 700;
+        }
+
+        .footer-logo i {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo"><span class="dot"></span> OLD SCHOOL</a>
+        <div class="nav">
+            <a href="/">Tổng quan</a>
+            <a href="#">Sản phẩm</a>
+            <a href="#">Đơn hàng</a>
+            <a href="#">Bộ sưu tập</a>
+            <a href="#">Tết sale</a>
+        </div>
+        <div class="user-section">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
+            <a href="{% url 'profile' %}" title="Quản lý tài khoản">
+                <div class="avatar"></div>
+            </a>
+            <div class="cart-icon">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge">7</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <h2 class="page-title">Thông tin Tài Khoản</h2>
+
+        <div class="layout" id="viewProfileLayout">
+            <aside class="sidebar">
+                <div class="sidebar-title">Quản lý tài khoản cá nhân</div>
+
+                <div class="menu-item active">
+                    <span style="margin-left: 15px;">Thông tin cá nhân</span>
+                </div>
+                <div class="menu-item" onclick="openPasswordModal()">
+                    <span style="margin-left: 15px; color: #555;">Đổi mật khẩu</span>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <div class="menu-item">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Đăng xuất
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="info-card">
+                    <div class="card-header">
+                        Thông tin chi tiết
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Tên người dùng</span>
+                                <span class="info-value">Khoa123</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Mã khách hàng</span>
+                                <span class="info-value">KH001</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tên khách hàng</span>
+                                <span class="info-value">Nguyễn Minh Khoa</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Địa chỉ email</span>
+                                <span class="info-value">Khoa123@gmail.com</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Số điện thoại</span>
+                                <span class="info-value">0966196548</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tổng số lần mua hàng</span>
+                                <span class="badge-green">55 đơn</span>
+                            </div>
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <span class="info-label">Địa chỉ</span>
+                                <span class="info-value">71 Ngũ Hành Sơn, Đà Nẵng</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" onclick="showEditProfile()">Chỉnh sửa thông tin</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="edit-profile-view" id="editProfileView">
+            <div class="edit-form-container">
+                <h3 class="edit-form-title">Vui lòng nhập các thông tin muốn điều chỉnh</h3>
+
+                <form onsubmit="handleUpdateProfile(event)">
+                    <div class="edit-form-group">
+                        <label class="text-red">Mã Khách hàng (Không đổi):</label>
+                        <input type="text" value="KH001" disabled class="input-disabled">
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label class="text-red">Tên Khách Hàng:</label>
+                        <input type="text" id="edit-name" value="Nguyễn Minh Khoa">
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label class="text-red">Số điện thoại:</label>
+                        <input type="text" id="edit-phone" value="0966196548">
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label class="text-dark">Địa chỉ Email</label>
+                        <input type="text" id="edit-email" value="Khoa123@gmail.com">
+                    </div>
+
+                    <div class="edit-form-group">
+                        <label class="text-dark">Địa chỉ</label>
+                        <input type="text" value="71 Ngũ Hành Sơn, Đà Nẵng" required>
+                    </div>
+
+                    <div class="edit-form-actions">
+                        <button type="button" class="btn btn-cancel" onclick="handleCancelUpdate()">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-logo">
+            <div class="logo-dot" style="width: 14px; height: 14px; background: #999;"></div>
+            OLD SCHOOL
+        </div>
+        <div>&copy; 2024 OLD SCHOOL. All rights reserved.</div>
+    </footer>
+
+    <div class="modal-overlay" id="successModal">
+        <div class="success-content">
+            <i class="fa-regular fa-circle-check success-icon"></i>
+            <h3 class="success-message">Cập nhật thông tin tài khoản thành công.</h3>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-content">
+            <i class="fa-solid fa-xmark modal-close" onclick="closePasswordModal()"></i>
+
+            <h2 class="modal-title">Đổi mật khẩu</h2>
+
+            <div class="modal-subtitle">
+                <span><strong>MaKH:</strong> KH001</span>
+                <span><strong>Khách hàng:</strong> Nguyễn Minh Khoa</span>
+            </div>
+
+            <form onsubmit="handlePasswordChange(event)">
+                <div class="form-group">
+                    <label>Mật khẩu hiện tại:</label>
+                    <input type="password" required placeholder="Vui lòng nhập hiện tại">
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu mới:</label>
+                    <input type="password" required placeholder="Vui lòng nhập mật khẩu mới">
+                </div>
+
+                <div class="form-group">
+                    <label>Xác nhận mật khẩu mới:</label>
+                    <input type="password" required placeholder="Vui lòng xác nhận lại mật khẩu mới">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closePasswordModal()">Huỷ</button>
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Các tính năng tắt/mở Modal
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('active');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+
+        function handlePasswordChange(event) {
+            event.preventDefault();
+            alert('Đổi mật khẩu thành công!');
+            closePasswordModal();
+        }
+
+        // Chuyển đổi giữa Xem hồ sơ và Chỉnh sửa hồ sơ
+        function showEditProfile() {
+            document.getElementById('viewProfileLayout').style.display = 'none';
+            document.getElementById('editProfileView').style.display = 'flex';
+        }
+
+        function cancelEditProfile() {
+            document.getElementById('editProfileView').style.display = 'none';
+            document.getElementById('viewProfileLayout').style.display = 'flex';
+        }
+
+        function showSuccessModal() {
+            var modal = document.getElementById('successModal');
+            modal.classList.add('active');
+            setTimeout(function() {
+                modal.classList.remove('active');
+            }, 2500);
+        }
+
+        function handleUpdateProfile(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('edit-name');
+            const phoneInput = document.getElementById('edit-phone');
+            const emailInput = document.getElementById('edit-email');
+
+            if (!nameInput.value.trim()) {
+                alert("Họ tên không được để trống. Vui lòng nhập lại");
+                nameInput.focus();
+                return;
+            }
+            if (!emailInput.value.trim()) {
+                alert("Email không được để trống. Vui lòng nhập lại");
+                emailInput.focus();
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                alert("Email không đúng định dạng. Vui lòng nhập lại");
+                emailInput.focus();
+                return;
+            }
+
+            const phoneRegex = /^[0-9]{10,11}$/;
+            if (!phoneRegex.test(phoneInput.value)) {
+                alert("Số điện thoại không hợp lệ. Vui lòng nhập lại");
+                phoneInput.focus();
+                return;
+            }
+
+            cancelEditProfile();
+            showSuccessModal();
+        }
+
+        function handleCancelUpdate() {
+            cancelEditProfile();
+        }
+    </script>
+</body>
+</html>

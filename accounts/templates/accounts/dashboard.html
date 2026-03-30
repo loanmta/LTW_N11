@@ -50,11 +50,11 @@
     <header class="header">
         <div class="logo"><span class="dot"></span> OLD SCHOOL</div>
         <div class="nav">
-            <span class="active">Tổng quan</span>
-            <span>Sản phẩm</span>
-            <span>Đơn hàng</span>
-            <span>Báo cáo</span>
-            <span>Khách hàng</span>
+            <a href="{% url 'dashboard' %}" class="active" style="text-decoration: none; color: #e53935;">Tổng quan</a>
+            <a href="#" style="text-decoration: none; color: #888;">Sản phẩm</a>
+            <a href="{% url 'orders' %}" style="text-decoration: none; color: #888;">Đơn hàng</a>
+            <a href="#" style="text-decoration: none; color: #888;">Báo cáo</a>
+            <a href="{% url 'customers' %}" style="text-decoration: none; color: #888;">Khách hàng</a>
         </div>
         <div class="user-section">
             <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
@@ -68,7 +68,11 @@
         </div>
 
         <div class="cards">
-            <div class="card"><div class="icon-box"><i class="fas fa-file-invoice-dollar"></i></div><h3>Đơn Hàng</h3><p>12 đơn mới</p></div>
+            <a href="{% url 'orders' %}" class="card" style="text-decoration: none; color: inherit; display: block;">
+                <div class="icon-box"><i class="fas fa-file-invoice-dollar"></i></div>
+                <h3>Đơn Hàng</h3>
+                <p>12 đơn mới</p>
+            </a>
             <div class="card"><div class="icon-box"><i class="fas fa-users"></i></div><h3>Khách Hàng</h3><p>1,240 thành viên</p></div>
             <div class="card"><div class="icon-box"><i class="fas fa-tshirt"></i></div><h3>Sản Phẩm</h3><p>850 mặt hàng</p></div>
             <div class="card"><div class="icon-box"><i class="fas fa-shapes"></i></div><h3>Danh Mục</h3><p>15 phân loại</p></div>

@@ -17,6 +17,7 @@ def dummy_home(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),  # Đường vào khu vực đăng nhập của bạn
+    path('users/', include('users.urls')), # App quản lý cho Khách hàng
 
     # --- ĐÂY LÀ 2 DÒNG ĐỂ SỬA CÁI LỖI VÀNG KHÈ KHÔNG TÌM THẤY TRANG ---
     path('dashboard/', dummy_dashboard, name='dashboard'),
