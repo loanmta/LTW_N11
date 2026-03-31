@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - OLD SCHOOL</title>
+    <link rel="stylesheet" href="{% static 'cart/css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'cart/css/product_detail.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    {% include 'cart/includes/header.html' %}
+
+    <!-- Product Detail -->
+    <main class="main-content">
+        <div class="container">
+            <div class="product-detail-layout">
+                <!-- Left: Images -->
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="mainImage" src="{{ product.image }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-title-mobile">
+                        <h1 class="product-name">{{ product.name }}</h1>
+                    </div>
+                    <div class="thumbnail-images">
+                        <div class="thumbnail active" onclick="changeImage('{{ product.image }}', this)">
+                            <img src="{{ product.image }}" alt="Ảnh 1">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('{{ product.image_2 }}', this)">
+                            <img src="{{ product.image_2 }}" alt="Ảnh 2">
+                        </div>
+                        <div class="thumbnail" onclick="changeImage('{{ product.image_3 }}', this)">
+                            <img src="{{ product.image_3 }}" alt="Ảnh 3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Product Info -->
+                <div class="product-details">
+                    <div class="product-header">
+                        <span class="collection-tag">PREMIUM COLLECTION</span>
+                        <h1 class="product-name">{{ product.name }}</h1>
+                        <div class="product-pricing">
+                            <span class="current-price">{{ product.price|floatformat:0 }}đ</span>
+                            {% if product.old_price %}
+                            <span class="old-price">{{ product.old_price|floatformat:0 }}đ</span>
+                            <span class="discount-badge">-20%</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="option-group">
+                        <label class="option-label">MÀU SẮC: <span class="selected-value">{{ product.color }}</span></label>
+                        <div class="color-options">
+                            <button class="color-btn active" data-color="Đỏ Ruby" style="background-color: #8B0000;">
+                                <span class="color-check">✓</span>
+                            </button>
+                            <button class="color-btn" data-color="Đen" style="background-color: #000000;">
+                                <span class="color-check">✓</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div class="option-group">
+                        <div class="option-header">
+                            <label class="option-label">KÍCH THƯỚC</label>
+                            <a href="#" class="size-guide">Hướng dẫn chọn size</a>
+                        </div>
+                        <div class="size-options">
+                            <button class="size-btn active">S</button>
+                            <button class="size-btn">M</button>
+                            <button class="size-btn">L</button>
+                            <button class="size-btn">XL</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-buy">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 3v14M3 10h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            MUA NGAY
+                        </button>
+                        <button class="btn-add-cart">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M3 3h2l1 9h10l2-7H6" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="17" r="1" fill="currentColor"/>
+                                <circle cx="15" cy="17" r="1" fill="currentColor"/>
+                            </svg>
+                            THÊM VÀO GIỎ
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="description-section">
+                        <h3 class="section-title">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                <path d="M4 6h12M4 10h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            MÔ TÁ SẢN PHẨM
+                        </h3>
+                        <div class="description-content">
+                            <p>{{ product.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <div class="reviews-header">
+                        <h3 class="section-title">Đánh giá của khách hàng</h3>
+                        <div class="rating-summary">
+                            <span class="rating-score">4.9</span>
+                            <div class="stars">
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                                <span class="star filled">★</span>
+                            </div>
+                            <span class="rating-count">(125 đánh giá)</span>
+                        </div>
+                    </div>
+
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-avatar">
+                                <img src="{{ review.avatar }}" alt="{{ review.name }}">
+                            </div>
+                            <div class="review-content">
+                                <div class="review-header">
+                                    <h4 class="reviewer-name">{{ review.name }}</h4>
+                                    <span class="review-date">{{ review.date }}</span>
+                                </div>
+                                <p class="review-text">{{ review.comment }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add to Cart Success Popup -->
+    <div id="addToCartPopup" class="toast-popup">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="15" fill="#D32F2F"/>
+                    <path d="M10 16l4 4 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="toast-text">
+                <h3 class="toast-title">Thành công</h3>
+                <p class="toast-message">Thêm vào giỏ hàng thành công</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeImage(imageSrc, thumbnail) {
+            document.getElementById('mainImage').src = imageSrc;
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            thumbnail.classList.add('active');
+        }
+
+        // Color selection
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelector('.selected-value').textContent = this.dataset.color;
+            });
+        });
+
+        // Size selection
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Buy now button
+        document.querySelector('.btn-buy').addEventListener('click', function() {
+            const selectedColor = document.querySelector('.color-btn.active').dataset.color;
+            const selectedSize = document.querySelector('.size-btn.active').textContent;
+            
+            sessionStorage.setItem('quickBuyProduct', JSON.stringify({
+                name: '{{ product.name }}',
+                color: selectedColor,
+                size: selectedSize,
+                price: {{ product.price }},
+                image: '{{ product.image }}',
+                quantity: 1
+            }));
+            
+            window.location.href = '{% url "cart:checkout" %}?quick_buy=1';
+        });
+
+        // Add to cart button
+        document.querySelector('.btn-add-cart').addEventListener('click', function() {
+            const selectedColor = document.querySelector('.color-btn.active').dataset.color;
+            const selectedSize = document.querySelector('.size-btn.active').textContent;
+            
+            fetch('{% url "cart:add_to_cart_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: {{ product.id }},
+                    quantity: 1,
+                    color: selectedColor,
+                    size: selectedSize
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCartBadge(data.cart_count);
+                    showAddToCartPopup();
+                } else {
+                    alert('Có lỗi xảy ra: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAddToCartPopup();
+            });
+        });
+
+        function updateCartBadge(count) {
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+                badge.textContent = count;
+            }
+        }
+
+        function showAddToCartPopup() {
+            const popup = document.getElementById('addToCartPopup');
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('{% url "cart:cart_count_api" %}')
+                .then(response => response.json())
+                .then(data => {
+                    updateCartBadge(data.cart_count);
+                })
+                .catch(error => console.error('Error loading cart count:', error));
+        });
+    </script>
+</body>
+</html>

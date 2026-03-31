@@ -1,0 +1,53 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="200" cy="200" r="190" fill="#2C5F6F"/>
+  
+  <!-- Face -->
+  <ellipse cx="200" cy="220" rx="85" ry="100" fill="#F4C8A8"/>
+  
+  <!-- Neck -->
+  <rect x="175" y="290" width="50" height="40" fill="#E8B89A"/>
+  
+  <!-- Hair -->
+  <path d="M115 180 Q115 100 200 100 Q285 100 285 180 Q285 140 260 130 Q240 120 200 120 Q160 120 140 130 Q115 140 115 180 Z" fill="#2C3E50"/>
+  
+  <!-- Ears -->
+  <ellipse cx="125" cy="210" rx="15" ry="25" fill="#E8B89A"/>
+  <ellipse cx="275" cy="210" rx="15" ry="25" fill="#E8B89A"/>
+  
+  <!-- Glasses Frame -->
+  <circle cx="170" cy="200" r="28" fill="none" stroke="#3E2723" stroke-width="4"/>
+  <circle cx="230" cy="200" r="28" fill="none" stroke="#3E2723" stroke-width="4"/>
+  <line x1="198" y1="200" x2="202" y2="200" stroke="#3E2723" stroke-width="4"/>
+  <path d="M142 200 L130 195" stroke="#3E2723" stroke-width="4" stroke-linecap="round"/>
+  <path d="M258 200 L270 195" stroke="#3E2723" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Eyes -->
+  <circle cx="170" cy="200" r="8" fill="#2C3E50"/>
+  <circle cx="230" cy="200" r="8" fill="#2C3E50"/>
+  <circle cx="173" cy="197" r="3" fill="#FFFFFF"/>
+  <circle cx="233" cy="197" r="3" fill="#FFFFFF"/>
+  
+  <!-- Eyebrows -->
+  <path d="M150 180 Q170 175 185 180" stroke="#2C3E50" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M215 180 Q230 175 250 180" stroke="#2C3E50" stroke-width="4" stroke-linecap="round" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M200 210 L195 230 L205 230" stroke="#D4A574" stroke-width="2" fill="none"/>
+  
+  <!-- Mouth -->
+  <path d="M180 250 Q200 255 220 250" stroke="#C97B63" stroke-width="3" stroke-linecap="round" fill="none"/>
+  
+  <!-- Shirt -->
+  <path d="M140 320 L140 400 L260 400 L260 320 Q250 310 200 310 Q150 310 140 320 Z" fill="#5A7C8C"/>
+  
+  <!-- Collar -->
+  <path d="M175 310 L165 330 L200 340 L235 330 L225 310" fill="#FFFFFF"/>
+  
+  <!-- Tie -->
+  <path d="M200 340 L195 370 L200 400 L205 370 Z" fill="#2C3E50"/>
+  
+  <!-- Suit Jacket -->
+  <path d="M130 330 Q130 310 140 320 L165 330 L140 400 L130 400 Z" fill="#34495E"/>
+  <path d="M270 330 Q270 310 260 320 L235 330 L260 400 L270 400 Z" fill="#34495E"/>
+</svg>
