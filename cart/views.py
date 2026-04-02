@@ -341,3 +341,260 @@ def get_sample_reviews():
             '2 tuần'
         ),
     ]
+
+
+def orders_view(request):
+    """Trang danh sách đơn hàng"""
+    # Lấy filter status từ URL
+    status_filter = request.GET.get('status', 'all')
+    search_query = request.GET.get('search', '').strip()
+    
+    # Lấy đơn hàng
+    if request.user.is_authenticated:
+        orders = Order.objects.filter(user=request.user)
+        
+        # Filter by status
+        if status_filter != 'all':
+            orders = orders.filter(status=status_filter)
+        
+        # Search by order number
+        if search_query:
+            orders = orders.filter(order_number__icontains=search_query)
+    else:
+        # Dữ liệu mẫu cho demo
+        orders = get_sample_orders()
+        
+        # Filter sample data
+        if status_filter != 'all':
+            orders = [o for o in orders if o.status == status_filter]
+        
+        if search_query:
+            orders = [o for o in orders if search_query.upper() in o.order_number]
+    
+    context = {
+        'orders': orders,
+        'status_filter': status_filter,
+        'search_query': search_query,
+    }
+    return render(request, 'cart/orders.html', context)
+
+
+def order_detail_view(request, order_number):
+    """Trang chi tiết đơn hàng"""
+    if request.user.is_authenticated:
+        order = get_object_or_404(Order, order_number=order_number, user=request.user)
+        order_items = order.items.all()
+    else:
+        # Dữ liệu mẫu
+        order = get_sample_order_detail(order_number)
+        order_items = order.items if hasattr(order, 'items') else []
+    
+    context = {
+        'order': order,
+        'order_items': order_items,
+    }
+    return render(request, 'cart/order_detail.html', context)
+
+
+def get_sample_orders():
+    """Return sample orders for demo"""
+    from datetime import datetime
+    
+    class SampleOrder:
+        def __init__(self, order_number, status, total, created_at):
+            self.order_number = order_number
+            self.status = status
+            self.total = total
+            self.created_at = created_at
+        
+        def get_status_display(self):
+            status_map = {
+                'completed': 'Hoàn thành',
+                'shipping': 'Đang giao',
+                'pending': 'Chờ xác nhận',
+                'cancelled': 'Đã hủy',
+            }
+            return status_map.get(self.status, self.status)
+        
+        def get_status_display_class(self):
+            return f'status-{self.status}'
+    
+    return [
+        SampleOrder('#CAT001', 'completed', 1250000, datetime(2026, 1, 12)),
+        SampleOrder('#CAT002', 'shipping', 890000, datetime(2026, 1, 12)),
+        SampleOrder('#CAT003', 'pending', 1400000, datetime(2026, 1, 15)),
+        SampleOrder('#CAT004', 'cancelled', 550000, datetime(2026, 1, 14)),
+    ]
+
+
+def get_sample_order_detail(order_number):
+    """Return sample order detail"""
+    from datetime import datetime
+    
+    class SampleOrderItem:
+        def __init__(self, product_name, quantity, color, size, price, image):
+            self.product_name = product_name
+            self.quantity = quantity
+            self.color = color
+            self.size = size
+            self.price = price
+            self.image = image
+        
+        def get_total_price(self):
+            return self.price * self.quantity
+    
+    class SampleOrder:
+        def __init__(self, order_number, status, created_at):
+            self.order_number = order_number
+            self.status = status
+            self.created_at = created_at
+            self.full_name = 'Nguyễn Minh Khoa'
+            self.phone = '0966196548'
+            self.address = '71 Ngũ Hành Sơn, Đà Nẵng'
+            self.payment_method = 'cod'
+            self.shipping_company = 'GHN Express'
+            self.tracking_number = 'GHN987654321'
+            
+            # Set timeline based on status
+            if status == 'pending':
+                # Chờ xác nhận - chỉ bước đầu hoàn thành
+                self.timeline = [
+                    {'status': 'ordered', 'label': 'Đã đặt hàng', 'date': '08:30, 20/10/2025', 'completed': True, 'active': True},
+                    {'status': 'confirmed', 'label': 'Chờ xác nhận', 'date': 'Dự kiến: 20/10/2025', 'completed': False},
+                    {'status': 'packed', 'label': 'Đang đóng gói', 'date': 'Dự kiến: 20/10/2025', 'completed': False},
+                    {'status': 'shipping', 'label': 'Đang giao hàng', 'date': 'Dự kiến: 21/10/2025', 'completed': False},
+                    {'status': 'delivered', 'label': 'Thành công', 'date': 'Dự kiến: 22/10', 'completed': False},
+                ]
+                self.subtotal = 350000
+                self.shipping_fee = 50000
+                self.total = 400000
+                self.items = [
+                    SampleOrderItem(
+                        'Combo Áo Blazer Đỏ Classic',
+                        2,
+                        'Đỏ Thẫm',
+                        'L',
+                        150000,
+                        'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=200&h=200&fit=crop&q=80'
+                    ),
+                    SampleOrderItem(
+                        'Quần Tây Ống Suông Lưng Cao',
+                        1,
+                        'Đen',
+                        'M',
+                        200000,
+                        'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=200&h=200&fit=crop&q=80'
+                    ),
+                ]
+            elif status == 'shipping':
+                # Đang giao - 4 bước đầu hoàn thành
+                self.timeline = [
+                    {'status': 'ordered', 'label': 'Đã đặt hàng', 'date': '08:30, 20/10/2025', 'completed': True},
+                    {'status': 'confirmed', 'label': 'Đã xác nhận', 'date': '10:15, 20/10/2025', 'completed': True},
+                    {'status': 'packed', 'label': 'Đang đóng gói', 'date': '14:40, 20/10/2025', 'completed': True},
+                    {'status': 'shipping', 'label': 'Đang giao hàng', 'date': '09:08, 21/10/2025', 'completed': True, 'active': True},
+                    {'status': 'delivered', 'label': 'Thành công', 'date': 'Dự kiến: 22/10', 'completed': False},
+                ]
+                self.subtotal = 1450000
+                self.shipping_fee = 50000
+                self.total = 1500000
+                self.items = [
+                    SampleOrderItem(
+                        'Combo 2 Áo thun Red Edition',
+                        2,
+                        'Đỏ Đậm',
+                        'L',
+                        500000,
+                        'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200&h=200&fit=crop&q=80'
+                    ),
+                    SampleOrderItem(
+                        'Quần Jean Slim Fit Denim',
+                        1,
+                        'Xanh đậm',
+                        '32',
+                        450000,
+                        'https://images.unsplash.com/photo-1542272604-787c3835535d?w=200&h=200&fit=crop&q=80'
+                    ),
+                ]
+            elif status == 'completed':
+                # Hoàn thành - tất cả bước hoàn thành
+                self.timeline = [
+                    {'status': 'ordered', 'label': 'Đã đặt hàng', 'date': '08:30, 12/01/2026', 'completed': True},
+                    {'status': 'confirmed', 'label': 'Đã xác nhận', 'date': '10:15, 12/01/2026', 'completed': True},
+                    {'status': 'packed', 'label': 'Đang đóng gói', 'date': '14:40, 12/01/2026', 'completed': True},
+                    {'status': 'shipping', 'label': 'Đang giao hàng', 'date': '09:08, 13/01/2026', 'completed': True},
+                    {'status': 'delivered', 'label': 'Thành công', 'date': '15:30, 14/01/2026', 'completed': True, 'active': True},
+                ]
+                self.subtotal = 1200000
+                self.shipping_fee = 50000
+                self.total = 1250000
+                self.items = [
+                    SampleOrderItem(
+                        'Áo Blazer Premium Edition',
+                        1,
+                        'Đỏ Ruby',
+                        'M',
+                        1200000,
+                        'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=200&h=200&fit=crop&q=80'
+                    ),
+                ]
+            elif status == 'cancelled':
+                # Đã hủy - chỉ bước đầu hoàn thành
+                self.timeline = [
+                    {'status': 'ordered', 'label': 'Đã đặt hàng', 'date': '08:30, 14/01/2026', 'completed': True, 'active': True},
+                    {'status': 'confirmed', 'label': 'Đã hủy', 'date': '09:15, 14/01/2026', 'completed': False},
+                    {'status': 'packed', 'label': 'Đang đóng gói', 'date': '', 'completed': False},
+                    {'status': 'shipping', 'label': 'Đang giao hàng', 'date': '', 'completed': False},
+                    {'status': 'delivered', 'label': 'Thành công', 'date': '', 'completed': False},
+                ]
+                self.subtotal = 500000
+                self.shipping_fee = 50000
+                self.total = 550000
+                self.items = [
+                    SampleOrderItem(
+                        'Áo Thun Basic Cotton',
+                        1,
+                        'Trắng',
+                        'L',
+                        500000,
+                        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&h=200&fit=crop&q=80'
+                    ),
+                ]
+            else:
+                # Default
+                self.timeline = [
+                    {'status': 'ordered', 'label': 'Đã đặt hàng', 'date': '08:30, 20/10/2025', 'completed': True},
+                    {'status': 'confirmed', 'label': 'Chờ xác nhận', 'date': 'Dự kiến: 20/10/2025', 'completed': False},
+                    {'status': 'packed', 'label': 'Đang đóng gói', 'date': 'Dự kiến: 20/10/2025', 'completed': False},
+                    {'status': 'shipping', 'label': 'Đang giao hàng', 'date': 'Dự kiến: 21/10/2025', 'completed': False},
+                    {'status': 'delivered', 'label': 'Thành công', 'date': 'Dự kiến: 22/10', 'completed': False},
+                ]
+                self.subtotal = 500000
+                self.shipping_fee = 50000
+                self.total = 550000
+                self.items = []
+        
+        def get_status_display(self):
+            status_map = {
+                'completed': 'Hoàn thành',
+                'shipping': 'Đang giao',
+                'pending': 'Chờ xác nhận',
+                'cancelled': 'Đã hủy',
+            }
+            return status_map.get(self.status, self.status)
+        
+        def get_status_display_class(self):
+            return f'status-{self.status}'
+    
+    # Return different order based on order_number
+    if order_number == '#CAT002':
+        return SampleOrder('#CAT002', 'shipping', datetime(2026, 1, 12))
+    elif order_number == '#CAT003':
+        return SampleOrder('#CAT003', 'pending', datetime(2026, 1, 15))
+    elif order_number == '#CAT001':
+        return SampleOrder('#CAT001', 'completed', datetime(2026, 1, 12))
+    elif order_number == '#CAT004':
+        return SampleOrder('#CAT004', 'cancelled', datetime(2026, 1, 14))
+    else:
+        return SampleOrder(order_number, 'pending', datetime(2026, 1, 12))
+

@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng của tôi - OLD SCHOOL</title>
+    <link rel="stylesheet" href="{% static 'cart/css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'cart/css/orders.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    {% include 'cart/includes/header.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Đơn hàng của tôi</h1>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <a href="?status=all" class="filter-tab {% if status_filter == 'all' %}active{% endif %}">Tất cả</a>
+                <a href="?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">Chờ xác nhận</a>
+                <a href="?status=shipping" class="filter-tab {% if status_filter == 'shipping' %}active{% endif %}">Đang giao</a>
+                <a href="?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">Hoàn thành</a>
+                <a href="?status=cancelled" class="filter-tab {% if status_filter == 'cancelled' %}active{% endif %}">Đã hủy</a>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-section">
+                <form method="GET" action="{% url 'cart:orders' %}" class="search-form">
+                    <input type="hidden" name="status" value="{{ status_filter }}">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <input type="text" name="search" class="search-input" placeholder="Tìm kiếm theo Mã đơn hàng" value="{{ search_query }}">
+                </form>
+            </div>
+
+            <!-- Orders List -->
+            <div class="orders-list">
+                {% if orders %}
+                    {% for order in orders %}
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-icon">
+                                {% if order.status == 'completed' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect x="4" y="8" width="24" height="18" rx="2" stroke="#4CAF50" stroke-width="2"/>
+                                    <path d="M4 12h24" stroke="#4CAF50" stroke-width="2"/>
+                                    <circle cx="16" cy="18" r="3" stroke="#4CAF50" stroke-width="2"/>
+                                </svg>
+                                {% elif order.status == 'shipping' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <path d="M4 12h16v10H4z" stroke="#2196F3" stroke-width="2"/>
+                                    <path d="M20 16h4l4 4v6h-8v-10z" stroke="#2196F3" stroke-width="2"/>
+                                    <circle cx="10" cy="26" r="2" stroke="#2196F3" stroke-width="2"/>
+                                    <circle cx="24" cy="26" r="2" stroke="#2196F3" stroke-width="2"/>
+                                </svg>
+                                {% elif order.status == 'pending' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <path d="M8 12h16M8 16h12M8 20h8" stroke="#FF9800" stroke-width="2" stroke-linecap="round"/>
+                                    <rect x="4" y="8" width="24" height="18" rx="2" stroke="#FF9800" stroke-width="2"/>
+                                </svg>
+                                {% else %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <circle cx="16" cy="16" r="10" stroke="#9E9E9E" stroke-width="2"/>
+                                    <path d="M12 12l8 8M20 12l-8 8" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <div class="order-info">
+                                <h3 class="order-number">{{ order.order_number }}</h3>
+                                <p class="order-date">Ngày đặt: {{ order.created_at|date:"d/m/Y" }}</p>
+                            </div>
+                            <div class="order-status">
+                                <span class="status-badge {{ order.get_status_display_class }}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="order-footer">
+                            <div class="order-total">
+                                <span class="total-label">TỔNG CỘNG</span>
+                                <span class="total-value">{{ order.total|floatformat:0 }}đ</span>
+                            </div>
+                            <a href="{% url 'cart:order_detail' order.order_number %}" class="btn-view-detail">Xem chi tiết</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <rect x="20" y="30" width="80" height="70" rx="4" stroke="#E0E0E0" stroke-width="3"/>
+                            <path d="M30 45h60M30 60h50M30 75h40" stroke="#E0E0E0" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="85" cy="85" r="20" fill="#FEF2F2" stroke="#D32F2F" stroke-width="3"/>
+                            <path d="M75 85l8 8 16-16" stroke="#D32F2F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <h3 class="empty-title">Chưa có đơn hàng nào</h3>
+                        <p class="empty-text">Bạn chưa có đơn hàng nào. Hãy khám phá và mua sắm ngay!</p>
+                        <a href="{% url 'cart:products' %}" class="btn-shop-now">Mua sắm ngay</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('{% url "cart:cart_count_api" %}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('cartBadge');
+                    if (badge) {
+                        badge.textContent = data.cart_count;
+                    }
+                })
+                .catch(error => console.error('Error loading cart count:', error));
+        });
+    </script>
+</body>
+</html>

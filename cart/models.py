@@ -56,3 +56,67 @@ class UserProfile(models.Model):
     
     def __str__(self):
         return self.full_name or f"Profile {self.id}"
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Chờ xác nhận'),
+        ('processing', 'Đang xử lý'),
+        ('shipping', 'Đang giao'),
+        ('completed', 'Hoàn thành'),
+        ('cancelled', 'Đã hủy'),
+    ]
+    
+    order_number = models.CharField(max_length=20, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
+    session_key = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Customer info
+    full_name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=20)
+    address = models.TextField()
+    
+    # Order details
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    payment_method = models.CharField(max_length=20, default='cod')  # cod or qr
+    
+    # Pricing
+    subtotal = models.DecimalField(max_digits=10, decimal_places=0)
+    discount = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=0, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=0)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"#{self.order_number}"
+    
+    def get_status_display_class(self):
+        status_classes = {
+            'pending': 'status-pending',
+            'processing': 'status-processing',
+            'shipping': 'status-shipping',
+            'completed': 'status-completed',
+            'cancelled': 'status-cancelled',
+        }
+        return status_classes.get(self.status, '')
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=0)
+    color = models.CharField(max_length=100, blank=True)
+    size = models.CharField(max_length=10, blank=True)
+    
+    def get_total_price(self):
+        return self.price * self.quantity
+    
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"

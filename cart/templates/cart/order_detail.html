@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết đơn hàng {{ order.order_number }} - OLD SCHOOL</title>
+    <link rel="stylesheet" href="{% static 'cart/css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'cart/css/order_detail.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    {% include 'cart/includes/header.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="header-left">
+                    <a href="{% url 'cart:orders' %}" class="back-link">Xem chi tiết</a>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-print">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                            <rect x="4" y="3" width="12" height="4" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="2" y="7" width="16" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <rect x="4" y="12" width="12" height="6" fill="white" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        Xem hóa đơn
+                    </button>
+                    <button class="btn-contact">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 5l7 5 7-5M4 4h12a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="white" stroke-width="1.5"/>
+                        </svg>
+                        Liên hệ hỗ trợ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Title -->
+            <div class="order-title-section">
+                <h1 class="order-title">Theo dõi Đơn hàng</h1>
+                <div class="order-meta">
+                    <span class="meta-label">Mã đơn hàng:</span>
+                    <span class="meta-value">{{ order.order_number }}</span>
+                    <span class="meta-separator">|</span>
+                    <span class="meta-label">Ngày đặt:</span>
+                    <span class="meta-value">{{ order.created_at|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+
+            <!-- Main Content - Single Column -->
+            <div class="detail-content">
+                <!-- Product List with Summary -->
+                <div class="section-card">
+                    <h3 class="section-title">Thông tin sản phẩm</h3>
+                    <div class="product-summary-layout">
+                        <div class="products-list">
+                            {% for item in order_items %}
+                            <div class="product-item">
+                                <div class="product-image">
+                                    <img src="{{ item.image }}" alt="{{ item.product_name }}">
+                                </div>
+                                <div class="product-info">
+                                    <h4 class="product-name">{{ item.product_name }}</h4>
+                                    <p class="product-details">Số lượng: {{ item.quantity }} | Màu: {{ item.color }} | Size: {{ item.size }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="order-summary-inline">
+                            <div class="summary-row">
+                                <span class="summary-label">Tạm tính</span>
+                                <span class="summary-value">{{ order.subtotal|floatformat:0 }}đ</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Phí vận chuyển</span>
+                                <span class="summary-value">{{ order.shipping_fee|floatformat:0 }}đ</span>
+                            </div>
+                            <div class="summary-divider"></div>
+                            <div class="summary-total">
+                                <span class="total-label">Tổng cộng</span>
+                                <span class="total-value">{{ order.total|floatformat:0 }}đ</span>
+                            </div>
+                            <div class="payment-badge">
+                                Thanh toán khi nhận hàng (COD)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tracking Timeline Horizontal -->
+                <div class="section-card">
+                    <h3 class="section-title">Trạng thái vận chuyển</h3>
+                    <div class="timeline-horizontal">
+                        {% for step in order.timeline %}
+                        <div class="timeline-step {% if step.completed %}completed{% endif %} {% if step.active %}active{% endif %}">
+                            <div class="step-icon">
+                                {% if step.status == 'ordered' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect x="8" y="10" width="16" height="14" rx="1" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 14h8M12 18h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                                {% elif step.status == 'confirmed' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect x="8" y="10" width="16" height="14" rx="1" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 16l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {% elif step.status == 'packed' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect x="8" y="12" width="16" height="12" rx="1" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M8 16h16M16 12v12" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                {% elif step.status == 'shipping' %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <path d="M6 12h12v8H6z" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M18 16h3l3 3v5h-6v-8z" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="11" cy="24" r="2" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="22" cy="24" r="2" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                {% else %}
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M12 16l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <div class="step-content">
+                                <p class="step-label">{{ step.label }}</p>
+                                <p class="step-date">{{ step.date }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Shipping Info -->
+                <div class="section-card">
+                    <h3 class="section-title">Thông tin vận chuyển</h3>
+                    <div class="shipping-info">
+                        <div class="info-row">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="info-icon">
+                                <path d="M4 8h12v8H4z" stroke="#D32F2F" stroke-width="2"/>
+                                <path d="M16 12h3l3 3v5h-6v-8z" stroke="#D32F2F" stroke-width="2"/>
+                                <circle cx="9" cy="20" r="2" stroke="#D32F2F" stroke-width="2"/>
+                                <circle cx="19" cy="20" r="2" stroke="#D32F2F" stroke-width="2"/>
+                            </svg>
+                            <div class="info-content">
+                                <p class="info-label">ĐƠN VỊ VẬN CHUYỂN</p>
+                                <p class="info-value">Giao Hàng Nhanh ({{ order.shipping_company }})</p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="info-icon">
+                                <path d="M6 8h12M6 12h8M6 16h6" stroke="#D32F2F" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <div class="info-content">
+                                <p class="info-label">MÃ VẬN ĐƠN</p>
+                                <p class="info-value">
+                                    {{ order.tracking_number }}
+                                    <button class="copy-btn" onclick="copyTracking('{{ order.tracking_number }}')">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <rect x="5" y="5" width="8" height="8" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M3 11V3h8" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="info-icon">
+                                <path d="M12 11a3 3 0 100-6 3 3 0 000 6z" stroke="#D32F2F" stroke-width="2"/>
+                                <path d="M12 3C8 3 5 6 5 10c0 6 7 13 7 13s7-7 7-13c0-4-3-7-7-7z" stroke="#D32F2F" stroke-width="2"/>
+                            </svg>
+                            <div class="info-content">
+                                <p class="info-label">ĐỊA CHỈ NHẬN HÀNG</p>
+                                <p class="info-value">{{ order.full_name }}</p>
+                                <p class="info-value">{{ order.phone }}</p>
+                                <p class="info-value">{{ order.address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Horizontal -->
+                <div class="action-buttons-horizontal">
+                    {% if order.status == 'completed' %}
+                        <!-- Đơn hàng đã giao: chỉ có Mua lại -->
+                        <button class="btn-reorder">Mua lại đơn hàng</button>
+                    {% elif order.status == 'cancelled' %}
+                        <!-- Đơn hàng đã hủy: chỉ có Mua lại -->
+                        <button class="btn-reorder">Mua lại đơn hàng</button>
+                    {% elif order.status == 'shipping' %}
+                        <!-- Đơn hàng đang giao: có Mua lại và Xác nhận -->
+                        <button class="btn-reorder">Mua lại đơn hàng</button>
+                        <button class="btn-confirm">Xác nhận đã nhận hàng</button>
+                    {% else %}
+                        <!-- Đơn hàng chờ xác nhận/đang xử lý: có đủ 3 nút -->
+                        <button class="btn-cancel">Hủy đơn hàng</button>
+                        <button class="btn-reorder">Mua lại đơn hàng</button>
+                        <button class="btn-confirm">Xác nhận đã nhận hàng</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function copyTracking(trackingNumber) {
+            navigator.clipboard.writeText(trackingNumber).then(() => {
+                alert('Đã sao chép mã vận đơn: ' + trackingNumber);
+            });
+        }
+
+        // Load cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('{% url "cart:cart_count_api" %}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('cartBadge');
+                    if (badge) {
+                        badge.textContent = data.cart_count;
+                    }
+                })
+                .catch(error => console.error('Error loading cart count:', error));
+        });
+    </script>
+</body>
+</html>

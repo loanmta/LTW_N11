@@ -9,6 +9,8 @@ urlpatterns = [
     path('popup-demo/', views.popup_demo_view, name='popup_demo'),
     path('products/', views.products_view, name='products'),
     path('products/<int:product_id>/', views.product_detail_view, name='product_detail'),
+    path('orders/', views.orders_view, name='orders'),
+    path('orders/<str:order_number>/', views.order_detail_view, name='order_detail'),
     
     # API endpoints
     path('api/add-to-cart/', api_views.add_to_cart_api, name='add_to_cart_api'),
