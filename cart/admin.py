@@ -11,11 +11,11 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['name', 'product', 'rating', 'date', 'created_at']
+    list_display = ['name', 'product', 'rating', 'created_at']
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'phone', 'user', 'created_at']
+    list_display = ['user', 'address', 'city', 'created_at']
 
 
 class OrderItemInline(admin.TabularInline):

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - OLD SCHOOL</title>
+    <link rel="stylesheet" href="/assets/css/global.css?v=9">
+    <link rel="stylesheet" href="/assets/css/header.css?v=9">
+    <link rel="stylesheet" href="/assets/css/cart.css?v=9">
+    <link rel="stylesheet" href="/assets/css/footer.css?v=9">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Giỏ hàng của bạn</h1>
+                <p class="page-subtitle">Đang tải...</p>
+            </div>
+
+            <div class="cart-layout">
+                <!-- Cart Items -->
+                <div class="cart-items-section">
+                    <div class="cart-header">
+                        <div class="cart-header-item checkbox-col">
+                            <input type="checkbox" id="select-all" checked>
+                        </div>
+                        <div class="cart-header-item product-col">SẢN PHẨM</div>
+                        <div class="cart-header-item quantity-col">SỐ LƯỢNG</div>
+                        <div class="cart-header-item price-col">ĐƠN GIÁ</div>
+                    </div>
+
+                    <div class="cart-items">
+                        <!-- Cart items will be loaded here -->
+                        <div class="loading-state">
+                            <p>Đang tải giỏ hàng...</p>
+                        </div>
+                    </div>
+
+                    <a href="#" class="continue-shopping">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Tiếp tục mua sắm
+                    </a>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2 class="summary-title">Tóm tắt đơn hàng</h2>
+                    
+                    <div class="summary-section">
+                        <h3 class="section-title">SẢN PHẨM ĐÃ CHỌN</h3>
+                        <p class="empty-message">Đang tải...</p>
+                    </div>
+
+                    <div class="summary-calculations">
+                        <div class="calc-row">
+                            <span class="calc-label">Tạm tính</span>
+                            <span class="calc-value">0đ</span>
+                        </div>
+                        <div class="calc-row discount">
+                            <span class="calc-label">Giảm giá</span>
+                            <span class="calc-value">-0đ</span>
+                        </div>
+                        <div class="calc-row">
+                            <span class="calc-label">Phí vận chuyển</span>
+                            <span class="calc-value">Miễn phí</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-total">
+                        <span class="total-label">Tổng tiền</span>
+                        <span class="total-value">0đ</span>
+                    </div>
+
+                    <button class="checkout-btn">
+                        Tiến hành đặt hàng
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M8 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+
+                    <p class="payment-info">Thuế VAT đã được tính trong giá</p>
+                    <div class="payment-methods">
+                        <span class="payment-icon">💳</span>
+                        <span class="payment-icon">💵</span>
+                        <span class="payment-icon">🚚</span>
+                    </div>
+
+                    <div class="voucher-section">
+                        <h3 class="voucher-title">Mã giảm giá / Voucher</h3>
+                        <div class="voucher-input-group">
+                            <input type="text" class="voucher-input" placeholder="Nhập mã ưu đãi">
+                            <button class="voucher-btn">Áp dụng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth-check.js"></script>
+    <script src="/assets/js/components.js"></script>
+    <script src="/assets/js/cart.js"></script>
+    <script>
+        // Check authentication on page load
+        requireAuth();
+    </script>
+</body>
+</html>

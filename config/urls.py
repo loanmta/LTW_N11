@@ -15,9 +15,37 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.conf import settings
+from django.conf.urls.static import static
+from cart.views_frontend import serve_frontend, serve_static_file
 
 urlpatterns = [
+    # Static files (must be BEFORE admin to avoid conflict)
+    re_path(r'^assets/(?P<path>.*)$', serve_static_file, name='assets'),
+    re_path(r'^static-admin/(?P<path>.*)$', serve_static_file, {'admin_assets': True}, name='admin_assets'),
+    
+    # Django admin
     path('admin/', admin.site.urls),
-    path('cart/', include('cart.urls')),
+    
+    # API endpoints
+    path('api/', include('backend.api.urls')),
+    
+    # Frontend pages
+    path('', serve_frontend, name='home'),
+    path('login.html', serve_frontend, {'path': 'login.html'}, name='login'),
+    path('products.html', serve_frontend, {'path': 'products.html'}, name='products'),
+    path('cart.html', serve_frontend, {'path': 'cart.html'}, name='cart'),
+    path('checkout.html', serve_frontend, {'path': 'checkout.html'}, name='checkout'),
+    path('orders.html', serve_frontend, {'path': 'orders.html'}, name='orders'),
+    path('order_detail.html', serve_frontend, {'path': 'order_detail.html'}, name='order_detail'),
+    path('product_detail.html', serve_frontend, {'path': 'product_detail.html'}, name='product_detail'),
+    path('profile.html', serve_frontend, {'path': 'profile.html'}, name='profile'),
+    
+    # Admin dashboard (custom)
+    path('dashboard/', serve_frontend, {'path': 'admin_dashboard.html'}, name='admin_dashboard'),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
