@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt hàng - OLD SCHOOL</title>
+    <link rel="stylesheet" href="/user/assets/css/global.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/header.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/checkout.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/popup.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/footer.css?v=9">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <a href="cart.html" class="back-link">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </a>
+                <h1 class="page-title">THÔNG TIN ĐẶT HÀNG</h1>
+            </div>
+
+            <div class="checkout-layout">
+                <!-- Left Column: Customer Info & Cart Items -->
+                <div class="checkout-left">
+                    <!-- Customer Information -->
+                    <section class="info-section">
+                        <div class="section-header">
+                            <h2 class="section-title">Thông tin người nhận</h2>
+                            <button class="edit-btn" onclick="toggleEditMode()">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                    <path d="M14 3l3 3-9 9H5v-3l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M11 6l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                </svg>
+                                Chỉnh sửa
+                            </button>
+                        </div>
+                        
+                        <!-- Display Mode -->
+                        <div id="displayMode" class="info-display">
+                            <div class="info-field">
+                                <label class="info-label">TÊN KHÁCH HÀNG</label>
+                                <p class="info-value" id="displayName">Chưa có thông tin</p>
+                            </div>
+                            <div class="info-field">
+                                <label class="info-label">SỐ ĐIỆN THOẠI</label>
+                                <p class="info-value" id="displayPhone">Chưa có thông tin</p>
+                            </div>
+                            <div class="info-field">
+                                <label class="info-label">ĐỊA CHỈ</label>
+                                <p class="info-value" id="displayAddress">Chưa có thông tin</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Edit Mode -->
+                        <form class="checkout-form" id="editMode" style="display: none;">
+                            <div class="form-group">
+                                <input type="text" id="inputName" class="form-input" placeholder="Họ tên" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" id="inputPhone" class="form-input" placeholder="Số điện thoại" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="inputAddress" class="form-input" placeholder="Địa chỉ nhận hàng" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-input" placeholder="Ghi chú (tùy chọn)">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-cancel" onclick="cancelEdit()">Hủy</button>
+                                <button type="button" class="btn-save" onclick="saveProfile()">Lưu thông tin</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Cart Items -->
+                    <section class="cart-section">
+                        <h2 class="section-title">Giỏ hàng</h2>
+                        <div class="checkout-items" id="checkoutItems">
+                            <div class="loading-state">Đang tải...</div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right Column: Order Summary -->
+                <div class="checkout-right">
+                    <div class="order-summary-box">
+                        <h2 class="summary-title">Chi tiết đơn hàng</h2>
+                        
+                        <!-- Discount Code -->
+                        <div class="discount-section">
+                            <input type="text" class="discount-input" placeholder="Mã giảm giá">
+                            <button class="discount-btn">Áp dụng</button>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Payment Method -->
+                        <div class="payment-section">
+                            <h3 class="payment-title">Phương thức thanh toán</h3>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="cod" checked>
+                                <span class="radio-custom"></span>
+                                <span class="payment-label">Thanh toán khi nhận hàng</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="qr">
+                                <span class="radio-custom"></span>
+                                <span class="payment-label">Thanh toán qua mã QR</span>
+                            </label>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Price Summary -->
+                        <div class="price-summary">
+                            <div class="price-row">
+                                <span class="price-label">Tạm tính</span>
+                                <span class="price-value">0đ</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-label">Phí giao hàng</span>
+                                <span class="price-value">Miễn phí</span>
+                            </div>
+                            <div class="price-row discount-row">
+                                <span class="price-label">Voucher giảm giá</span>
+                                <span class="price-value">0đ</span>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Total -->
+                        <div class="total-section">
+                            <span class="total-label">Thành tiền</span>
+                            <span class="total-value">0đ</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn-secondary" onclick="window.location.href='cart.html'">Hủy bỏ</button>
+                            <button class="btn-primary">ĐẶT HÀNG</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Popup 1: QR Code Payment -->
+    <div id="qrPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content qr-popup">
+            <div class="popup-header">
+                <h2 class="popup-title">THANH TOÁN QUA MÃ QR</h2>
+                <p class="popup-subtitle">Quét mã để hoàn tất đơn hàng của bạn</p>
+            </div>
+            
+            <div class="qr-container">
+                <div class="qr-frame">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PAYMENT" alt="QR Code" class="qr-image">
+                </div>
+                <div class="qr-status">
+                    <div class="loading-spinner"></div>
+                    <span class="status-text">Đang chờ thanh toán...</span>
+                </div>
+            </div>
+
+            <div class="payment-details">
+                <div class="detail-row">
+                    <span class="detail-label">Số tiền cần thanh toán</span>
+                    <span class="detail-value red">0đ</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Nội dung chuyển khoản</span>
+                    <span class="detail-value">ORD123456 
+                        <button class="copy-btn" onclick="copyToClipboard('ORD123456')">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                                <rect x="6" y="6" width="10" height="10" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M4 14V4h10" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </button>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Ngân hàng thụ hưởng</span>
+                    <span class="detail-value">
+                        <strong>Vietcombank</strong><br>
+                        <small>Công ty TNHH Old School</small>
+                    </span>
+                </div>
+            </div>
+
+            <button class="popup-btn primary" onclick="completePayment()">Đã hoàn tất thanh toán</button>
+            <button class="popup-btn secondary" onclick="closeQRPopup()">Quay lại trang chủ</button>
+        </div>
+    </div>
+
+    <!-- Popup 2: Order Success -->
+    <div id="successPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content success-popup">
+            <button class="close-btn" onclick="closeSuccessPopup()">×</button>
+            
+            <div class="success-icon">
+                <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                    <circle cx="30" cy="30" r="28" fill="#D32F2F"/>
+                    <path d="M18 30l8 8 16-16" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <h2 class="success-title">Đặt hàng thành công</h2>
+
+            <div class="order-info">
+                <div class="info-row">
+                    <span class="info-label">Mã đơn hàng:</span>
+                    <span class="info-value">ORD123456</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Tổng tiền:</span>
+                    <span class="info-value">0đ</span>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <button class="success-btn primary" onclick="viewOrder()">Xem đơn hàng</button>
+                <button class="success-btn secondary" onclick="backToHome()">Quay về trang chủ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="/user/assets/js/api.js"></script>
+    <script src="/user/assets/js/auth-check.js"></script>
+    <script src="/user/assets/js/components.js"></script>
+    <script src="/user/assets/js/checkout.js"></script>
+    <script>
+        // Check authentication on page load
+        requireAuth();
+    </script>
+</body>
+</html>

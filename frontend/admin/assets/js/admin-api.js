@@ -31,14 +31,8 @@ class AdminAPI {
 
     // Dashboard Stats
     async getDashboardStats() {
-        // Mock data for now
-        return {
-            newOrders: 12,
-            totalCustomers: 1240,
-            totalProducts: 850,
-            monthRevenue: 450000000,
-            todayRevenue: 15000000
-        };
+        const response = await this.request('/dashboard/stats/');
+        return response.stats;
     }
 
     // Products

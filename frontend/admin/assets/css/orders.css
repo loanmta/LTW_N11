@@ -1,0 +1,357 @@
+/* Orders Management Page Styles */
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.order-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: white;
+    border: 2px solid #D32F2F;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #D32F2F;
+}
+
+/* Toolbar */
+.orders-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    gap: 20px;
+}
+
+.toolbar-left {
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input-wrapper svg {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #D32F2F;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 10px 16px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #666;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    border-color: #D32F2F;
+    color: #D32F2F;
+}
+
+.filter-btn.active {
+    background: #D32F2F;
+    border-color: #D32F2F;
+    color: white;
+}
+
+/* Orders Table */
+.orders-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table thead {
+    background: #f8f9fa;
+}
+
+.orders-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.orders-table tbody tr {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.3s;
+}
+
+.orders-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.orders-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.orders-table td {
+    padding: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.order-id {
+    font-weight: 600;
+    color: #D32F2F;
+    cursor: pointer;
+}
+
+.order-id:hover {
+    text-decoration: underline;
+}
+
+.customer-name {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.order-date {
+    color: #666;
+}
+
+.order-total {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.pending {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+.status-badge.confirmed {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.status-badge.shipping {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.status-badge.completed {
+    background: #E8F5E9;
+    color: #388E3C;
+}
+
+.status-badge.cancelled {
+    background: #FFEBEE;
+    color: #D32F2F;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-badge.pending .status-dot {
+    background: #F57C00;
+}
+
+.status-badge.confirmed .status-dot {
+    background: #1976D2;
+}
+
+.status-badge.shipping .status-dot {
+    background: #1976D2;
+}
+
+.status-badge.completed .status-dot {
+    background: #388E3C;
+}
+
+.status-badge.cancelled .status-dot {
+    background: #D32F2F;
+}
+
+/* Action Button */
+.btn-view-detail {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #D32F2F;
+    border-radius: 6px;
+    color: #D32F2F;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-view-detail:hover {
+    background: #D32F2F;
+    color: white;
+}
+
+/* Pagination */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.pagination-info {
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.pagination-info span {
+    color: #333;
+    font-weight: 600;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+}
+
+.pagination-btn {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #666;
+}
+
+.pagination-btn:hover {
+    border-color: #D32F2F;
+    color: #D32F2F;
+}
+
+.pagination-btn.active {
+    background: #D32F2F;
+    border-color: #D32F2F;
+    color: white;
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 60px;
+    color: #999;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .orders-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .toolbar-left {
+        max-width: none;
+    }
+    
+    .toolbar-right {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .orders-table-container {
+        overflow-x: auto;
+    }
+    
+    .orders-table {
+        min-width: 800px;
+    }
+    
+    .pagination-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+}

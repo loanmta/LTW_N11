@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - OLD SCHOOL</title>
+    <link rel="stylesheet" href="/user/assets/css/global.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/header.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/profile.css?v=9">
+    <link rel="stylesheet" href="/user/assets/css/footer.css?v=9">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Thông tin cá nhân</h1>
+            </div>
+
+            <div class="profile-layout">
+                <!-- Left Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="sidebar-menu">
+                        <a href="#" class="menu-item active" data-tab="info">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M4 18c0-3.5 2.5-6 6-6s6 2.5 6 6" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Thông tin tài khoản
+                        </a>
+                        <a href="#" class="menu-item" data-tab="password">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="4" y="9" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Đổi mật khẩu
+                        </a>
+                        <a href="orders.html" class="menu-item">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="3" y="5" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 8h14M7 5V3M13 5V3" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Đơn hàng của tôi
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Content -->
+                <div class="profile-content">
+                    <!-- Tab: Thông tin tài khoản -->
+                    <div class="tab-content active" id="tab-info">
+                        <div class="content-card">
+                            <h2 class="card-title">Thông tin tài khoản</h2>
+                            <form class="profile-form" id="profileForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" id="email" class="form-input" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ và tên <span class="required">*</span></label>
+                                        <input type="text" id="fullName" class="form-input" placeholder="Nhập họ và tên" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại</label>
+                                        <input type="tel" id="phone" class="form-input" placeholder="Nhập số điện thoại">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Địa chỉ</label>
+                                        <input type="text" id="address" class="form-input" placeholder="Nhập địa chỉ giao hàng">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Quận/Huyện</label>
+                                        <input type="text" id="district" class="form-input" placeholder="Nhập quận/huyện">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Tỉnh/Thành phố</label>
+                                        <input type="text" id="city" class="form-input" placeholder="Nhập tỉnh/thành phố">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-save">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Đổi mật khẩu -->
+                    <div class="tab-content" id="tab-password">
+                        <div class="content-card">
+                            <h2 class="card-title">Đổi mật khẩu</h2>
+                            <form class="profile-form" id="passwordForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Mật khẩu hiện tại <span class="required">*</span></label>
+                                        <input type="password" id="currentPassword" class="form-input" placeholder="Nhập mật khẩu hiện tại" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Mật khẩu mới <span class="required">*</span></label>
+                                        <input type="password" id="newPassword" class="form-input" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Xác nhận mật khẩu mới <span class="required">*</span></label>
+                                        <input type="password" id="confirmPassword" class="form-input" placeholder="Nhập lại mật khẩu mới" required>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-save">Đổi mật khẩu</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="/user/assets/js/api.js"></script>
+    <script src="/user/assets/js/auth-check.js"></script>
+    <script src="/user/assets/js/components.js"></script>
+    <script src="/user/assets/js/profile.js"></script>
+    <script>
+        // Check authentication on page load
+        requireAuth();
+    </script>
+</body>
+</html>

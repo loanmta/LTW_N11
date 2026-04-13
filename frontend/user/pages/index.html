@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="OLD SCHOOL - Thời trang cao cấp, phong cách cổ điển sang trọng. Mua sắm quần áo chất lượng với giá tốt nhất. Miễn phí vận chuyển toàn quốc.">
+    <meta name="keywords" content="thời trang, quần áo, áo sơ mi, quần jean, old school, thời trang nam, thời trang nữ">
+    <meta name="author" content="OLD SCHOOL">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://127.0.0.1:8000/">
+    <meta property="og:title" content="OLD SCHOOL - Thời trang cao cấp">
+    <meta property="og:description" content="Thời trang cao cấp, phong cách cổ điển sang trọng. Miễn phí vận chuyển toàn quốc.">
+    <meta property="og:image" content="http://127.0.0.1:8000/user/assets/images/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="http://127.0.0.1:8000/">
+    <meta property="twitter:title" content="OLD SCHOOL - Thời trang cao cấp">
+    <meta property="twitter:description" content="Thời trang cao cấp, phong cách cổ điển sang trọng. Miễn phí vận chuyển toàn quốc.">
+    
+    <title>OLD SCHOOL - Thời trang cao cấp | Mua sắm online</title>
+    <link rel="canonical" href="http://127.0.0.1:8000/">
+    <link rel="stylesheet" href="/user/assets/css/global.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/header.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/home.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/footer.css?v=11">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "OLD SCHOOL",
+      "url": "http://127.0.0.1:8000/",
+      "description": "Thời trang cao cấp, phong cách cổ điển sang trọng",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "http://127.0.0.1:8000/products.html?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "OLD SCHOOL",
+      "url": "http://127.0.0.1:8000/",
+      "logo": "http://127.0.0.1:8000/user/assets/images/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+84-901-234-567",
+        "contactType": "Customer Service"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-container"></div>
+
+    <!-- Hero Banner Section -->
+    <section class="hero-banner" aria-label="Banner chính">
+        <div class="container">
+            <div class="hero-wrapper">
+                <div class="hero-text-side">
+                    <h1 class="hero-title">PHONG CÁCH LÀ VĨNH CỬU</h1>
+                    <p class="hero-subtitle">Khám phá bộ sưu tập thời trang cao cấp, nơi phong cách cổ điển gặp gỡ xu hướng hiện đại</p>
+                    <a href="/products.html" class="hero-btn">
+                        <span>MUA SẮM NGAY</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <div class="hero-mini-images">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&h=150&fit=crop&q=80" alt="Sản phẩm 1">
+                        <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=150&h=150&fit=crop&q=80" alt="Sản phẩm 2">
+                        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=150&h=150&fit=crop&q=80" alt="Sản phẩm 3">
+                    </div>
+                </div>
+                <div class="hero-image-side">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop&q=80" 
+                         alt="OLD SCHOOL - Thời trang cao cấp" 
+                         class="hero-image"
+                         loading="eager">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-section" aria-labelledby="featured-title">
+        <div class="container">
+            <header class="section-header">
+                <h2 id="featured-title" class="section-title">SẢN PHẨM MỚI</h2>
+            </header>
+            <div class="products-grid-wrap" id="featuredProducts" role="list" aria-label="Danh sách sản phẩm nổi bật">
+                <div class="loading">Đang tải...</div>
+            </div>
+            <div class="section-footer">
+                <a href="/products.html" class="btn-view-all">XEM TẤT CẢ SẢN PHẨM MỚI</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- New Arrivals Section -->
+    <section class="new-arrivals-section" aria-labelledby="new-arrivals-title">
+        <div class="container">
+            <header class="section-header">
+                <h2 id="new-arrivals-title" class="section-title">BỘ SƯU TẬP 2025</h2>
+            </header>
+            <div class="products-grid-wrap" id="newProducts" role="list" aria-label="Danh sách hàng mới về">
+                <div class="loading">Đang tải...</div>
+            </div>
+            <div class="section-footer">
+                <a href="/products.html?is_new=true" class="btn-view-all">XEM TẤT CẢ SẢN PHẨM</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section" aria-labelledby="newsletter-title">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2 id="newsletter-title" class="newsletter-title">ĐĂNG KÝ NHẬN TIN</h2>
+                <p class="newsletter-text">Nhận thông tin sản phẩm mới nhất, tin khuyến mãi và nhiều hơn nữa.</p>
+                <form class="newsletter-form" aria-label="Form đăng ký nhận tin">
+                    <label for="email-subscribe" class="sr-only">Email của bạn</label>
+                    <input type="email" 
+                           id="email-subscribe" 
+                           class="newsletter-input" 
+                           placeholder="Email của bạn"
+                           required
+                           aria-required="true">
+                    <button type="submit" class="newsletter-button">ĐĂNG KÝ</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer-container"></div>
+
+    <script src="/user/assets/js/api.js"></script>
+    <script src="/user/assets/js/auth-check.js"></script>
+    <script src="/user/assets/js/components.js"></script>
+    <script src="/user/assets/js/home.js"></script>
+</body>
+</html>

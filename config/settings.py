@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     # Local apps
-    'users',
     'cart',
     'backend.api',
 ]
@@ -80,28 +79,28 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# SQL Server configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'OldSchoolDB',
-        'USER': 'sa',  # Thay bằng username của bạn
-        'PASSWORD': '123',  # Thay bằng password của bạn
-        'HOST': 'LAPTOP-FC7B59J6',  # Hoặc localhost
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
-
-# SQLite for development (uncomment to use)
+# SQL Server configuration (commented out)
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'mssql',
+#         'NAME': 'OldSchoolDB',
+#         'USER': 'sa',
+#         'PASSWORD': '123',
+#         'HOST': 'LAPTOP-FC7B59J6',
+#         'PORT': '',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
 #     }
 # }
+
+# SQLite for development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -139,7 +138,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'frontend' / 'user' / 'assets',  # User frontend assets
+    BASE_DIR / 'frontend' / 'admin' / 'assets',  # Admin frontend assets
+]
+
+# Static files aliases
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field

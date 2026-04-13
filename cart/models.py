@@ -15,8 +15,7 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'Categories'
-        managed = False  # Don't let Django manage this table
+        managed = True
     
     def __str__(self):
         return self.name
@@ -33,9 +32,9 @@ class Product(models.Model):
     stock_quantity = models.IntegerField(default=0)
     color = models.CharField(max_length=50, blank=True, null=True)
     size = models.CharField(max_length=20, blank=True, null=True)
-    image_url = models.CharField(max_length=500, blank=True, null=True)
-    image_2_url = models.CharField(max_length=500, blank=True, null=True)
-    image_3_url = models.CharField(max_length=500, blank=True, null=True)
+    image_url = models.TextField(blank=True, null=True)
+    image_2_url = models.TextField(blank=True, null=True)
+    image_3_url = models.TextField(blank=True, null=True)
     is_new = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -43,8 +42,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'Products'
-        managed = False
+        managed = True
     
     def __str__(self):
         return self.name
@@ -62,8 +60,7 @@ class CustomUser(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'Users'
-        managed = False
+        managed = True
     
     def __str__(self):
         return self.email
@@ -83,8 +80,7 @@ class UserProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'UserProfiles'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"Profile of {self.user.email}"
@@ -115,8 +111,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'Orders'
-        managed = False
+        managed = True
         ordering = ['-created_at']
     
     def __str__(self):
@@ -137,8 +132,7 @@ class OrderItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'OrderItems'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.product_name} x {self.quantity}"
@@ -155,8 +149,7 @@ class CartItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'CartItems'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
@@ -175,31 +168,10 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'Reviews'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.name} - {self.product.name}"
 
 
-class Voucher(models.Model):
-    voucher_id = models.AutoField(primary_key=True)
-    code = models.CharField(max_length=50, unique=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    discount_type = models.CharField(max_length=20)
-    discount_value = models.DecimalField(max_digits=18, decimal_places=2)
-    min_order_value = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
-    max_discount = models.DecimalField(max_digits=18, decimal_places=2, null=True, blank=True)
-    usage_limit = models.IntegerField(null=True, blank=True)
-    used_count = models.IntegerField(default=0)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        db_table = 'Vouchers'
-        managed = False
-    
-    def __str__(self):
-        return self.code
+

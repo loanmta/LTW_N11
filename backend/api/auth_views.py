@@ -1,67 +1,83 @@
+"""
+Authentication Views
+
+Module này xử lý tất cả các chức năng liên quan đến authentication:
+- Đăng ký tài khoản mới
+- Đăng nhập/Đăng xuất
+- Kiểm tra trạng thái đăng nhập
+- Quản lý profile
+- Đổi mật khẩu
+
+Sử dụng Django session để lưu trữ thông tin user
+"""
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password, check_password
 from django.db import connection
-from cart.models import CustomUser
+from cart.models import CustomUser, UserProfile
 from datetime import datetime
 
 
 @api_view(['POST'])
 def register(request):
-    """Đăng ký tài khoản mới"""
+    """
+    Đăng ký tài khoản mới
+    
+    POST /api/auth/register/
+    Body: {
+        "email": "user@example.com",
+        "password": "password123",
+        "full_name": "Nguyễn Văn A",
+        "phone": "0123456789" (optional)
+    }
+    
+    Returns:
+        - 201: Đăng ký thành công
+        - 400: Thiếu thông tin hoặc email đã tồn tại
+        - 500: Lỗi server
+    """
+    # Lấy dữ liệu từ request
     email = request.data.get('email')
     password = request.data.get('password')
     full_name = request.data.get('full_name')
     phone = request.data.get('phone', '')
     
-    # Validate
+    # Validate: Kiểm tra các trường bắt buộc
     if not email or not password or not full_name:
         return Response({
             'success': False,
             'message': 'Vui lòng điền đầy đủ thông tin'
         }, status=status.HTTP_400_BAD_REQUEST)
     
-    # Check if email exists
+    # Kiểm tra email đã tồn tại chưa
     if CustomUser.objects.filter(email=email).exists():
         return Response({
             'success': False,
             'message': 'Email đã được sử dụng'
         }, status=status.HTTP_400_BAD_REQUEST)
     
-    # Create user using raw SQL
+    # Tạo user mới sử dụng Django ORM
     try:
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                INSERT INTO Users (email, password_hash, full_name, phone, role, is_active, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, [
-                email,
-                make_password(password),
-                full_name,
-                phone,
-                'user',
-                True,
-                datetime.now(),
-                datetime.now()
-            ])
-            
-            # Get the created user
-            cursor.execute("SELECT user_id, email, full_name, phone, role FROM Users WHERE email = %s", [email])
-            row = cursor.fetchone()
-            
-            user_data = {
-                'user_id': row[0],
-                'email': row[1],
-                'full_name': row[2],
-                'phone': row[3],
-                'role': row[4]
-            }
+        user = CustomUser.objects.create(
+            email=email,
+            password_hash=make_password(password),  # Hash password trước khi lưu
+            full_name=full_name,
+            phone=phone,
+            role='user',  # Mặc định là user, không phải admin
+            is_active=True
+        )
         
         return Response({
             'success': True,
             'message': 'Đăng ký thành công',
-            'user': user_data
+            'user': {
+                'user_id': user.user_id,
+                'email': user.email,
+                'full_name': user.full_name,
+                'phone': user.phone,
+                'role': user.role
+            }
         }, status=status.HTTP_201_CREATED)
         
     except Exception as e:
@@ -73,10 +89,25 @@ def register(request):
 
 @api_view(['POST'])
 def login(request):
-    """Đăng nhập"""
+    """
+    Đăng nhập
+    
+    POST /api/auth/login/
+    Body: {
+        "email": "user@example.com",
+        "password": "password123"
+    }
+    
+    Returns:
+        - 200: Đăng nhập thành công, lưu thông tin vào session
+        - 400: Thiếu email hoặc password
+        - 401: Mật khẩu không đúng
+        - 404: Email không tồn tại
+    """
     email = request.data.get('email')
     password = request.data.get('password')
     
+    # Validate input
     if not email or not password:
         return Response({
             'success': False,
@@ -84,11 +115,12 @@ def login(request):
         }, status=status.HTTP_400_BAD_REQUEST)
     
     try:
+        # Tìm user theo email và is_active=True
         user = CustomUser.objects.get(email=email, is_active=True)
         
-        # Check password
+        # Kiểm tra password
         if check_password(password, user.password_hash):
-            # Store user info in session
+            # Lưu thông tin user vào session
             request.session['user_id'] = user.user_id
             request.session['email'] = user.email
             request.session['full_name'] = user.full_name
@@ -120,8 +152,14 @@ def login(request):
 
 @api_view(['POST'])
 def logout(request):
-    """Đăng xuất"""
-    request.session.flush()
+    """
+    Đăng xuất
+    
+    POST /api/auth/logout/
+    
+    Xóa toàn bộ session data
+    """
+    request.session.flush()  # Xóa tất cả session data
     return Response({
         'success': True,
         'message': 'Đăng xuất thành công'
@@ -130,11 +168,20 @@ def logout(request):
 
 @api_view(['GET'])
 def check_auth(request):
-    """Kiểm tra trạng thái đăng nhập"""
+    """
+    Kiểm tra trạng thái đăng nhập
+    
+    GET /api/auth/check/
+    
+    Returns:
+        - authenticated: true/false
+        - user: thông tin user nếu đã đăng nhập
+    """
     user_id = request.session.get('user_id')
     
     if user_id:
         try:
+            # Lấy thông tin user từ database
             user = CustomUser.objects.get(user_id=user_id, is_active=True)
             return Response({
                 'authenticated': True,
@@ -147,6 +194,7 @@ def check_auth(request):
                 }
             })
         except CustomUser.DoesNotExist:
+            # User không tồn tại, xóa session
             request.session.flush()
             return Response({
                 'authenticated': False
@@ -159,9 +207,30 @@ def check_auth(request):
 
 @api_view(['GET', 'PUT'])
 def profile(request):
-    """Lấy hoặc cập nhật thông tin profile"""
+    """
+    Lấy hoặc cập nhật thông tin profile
+    
+    GET /api/auth/profile/
+    - Lấy thông tin profile của user hiện tại
+    
+    PUT /api/auth/profile/
+    Body: {
+        "full_name": "Nguyễn Văn A",
+        "phone": "0123456789",
+        "address": "123 Đường ABC",
+        "city": "Hà Nội",
+        "district": "Quận 1"
+    }
+    - Cập nhật thông tin profile
+    
+    Returns:
+        - 200: Thành công
+        - 401: Chưa đăng nhập
+        - 404: User không tồn tại
+    """
     user_id = request.session.get('user_id')
     
+    # Kiểm tra đã đăng nhập chưa
     if not user_id:
         return Response({
             'success': False,
@@ -172,7 +241,19 @@ def profile(request):
         user = CustomUser.objects.get(user_id=user_id, is_active=True)
         
         if request.method == 'GET':
-            # Get profile
+            # GET: Lấy thông tin profile
+            try:
+                # Lấy địa chỉ từ UserProfile
+                user_profile = UserProfile.objects.get(user=user)
+                address = user_profile.address
+                city = user_profile.city
+                district = user_profile.district
+            except UserProfile.DoesNotExist:
+                # Chưa có UserProfile
+                address = None
+                city = None
+                district = None
+            
             return Response({
                 'success': True,
                 'user': {
@@ -180,30 +261,41 @@ def profile(request):
                     'email': user.email,
                     'full_name': user.full_name,
                     'phone': user.phone,
-                    'role': user.role
+                    'role': user.role,
+                    'address': address,
+                    'city': city,
+                    'district': district
                 }
             })
         
         elif request.method == 'PUT':
-            # Update profile
+            # PUT: Cập nhật profile
             full_name = request.data.get('full_name')
             phone = request.data.get('phone')
+            address = request.data.get('address')
+            city = request.data.get('city')
+            district = request.data.get('district')
             
+            # Validate: Họ tên là bắt buộc
             if not full_name:
                 return Response({
                     'success': False,
                     'message': 'Vui lòng nhập họ tên'
                 }, status=status.HTTP_400_BAD_REQUEST)
             
-            # Update using raw SQL
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    UPDATE Users 
-                    SET full_name = %s, phone = %s, updated_at = %s
-                    WHERE user_id = %s
-                """, [full_name, phone, datetime.now(), user_id])
+            # Cập nhật thông tin user
+            user.full_name = full_name
+            user.phone = phone
+            user.save()
             
-            # Update session
+            # Cập nhật hoặc tạo UserProfile
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            user_profile.address = address
+            user_profile.city = city
+            user_profile.district = district
+            user_profile.save()
+            
+            # Cập nhật session
             request.session['full_name'] = full_name
             
             return Response({
@@ -214,7 +306,10 @@ def profile(request):
                     'email': user.email,
                     'full_name': full_name,
                     'phone': phone,
-                    'role': user.role
+                    'role': user.role,
+                    'address': address,
+                    'city': city,
+                    'district': district
                 }
             })
             
@@ -227,31 +322,51 @@ def profile(request):
 
 @api_view(['POST'])
 def change_password(request):
-    """Đổi mật khẩu"""
+    """
+    Đổi mật khẩu
+    
+    POST /api/auth/change-password/
+    Body: {
+        "current_password": "old_password",
+        "new_password": "new_password",
+        "confirm_password": "new_password"
+    }
+    
+    Returns:
+        - 200: Đổi mật khẩu thành công
+        - 400: Validation error
+        - 401: Chưa đăng nhập
+        - 404: User không tồn tại
+    """
     user_id = request.session.get('user_id')
     
+    # Kiểm tra đã đăng nhập chưa
     if not user_id:
         return Response({
             'success': False,
             'message': 'Chưa đăng nhập'
         }, status=status.HTTP_401_UNAUTHORIZED)
     
+    # Lấy dữ liệu từ request
     current_password = request.data.get('current_password')
     new_password = request.data.get('new_password')
     confirm_password = request.data.get('confirm_password')
     
+    # Validate: Kiểm tra đầy đủ thông tin
     if not all([current_password, new_password, confirm_password]):
         return Response({
             'success': False,
             'message': 'Vui lòng điền đầy đủ thông tin'
         }, status=status.HTTP_400_BAD_REQUEST)
     
+    # Validate: Mật khẩu mới phải khớp
     if new_password != confirm_password:
         return Response({
             'success': False,
             'message': 'Mật khẩu mới không khớp'
         }, status=status.HTTP_400_BAD_REQUEST)
     
+    # Validate: Mật khẩu phải có ít nhất 6 ký tự
     if len(new_password) < 6:
         return Response({
             'success': False,
@@ -261,21 +376,17 @@ def change_password(request):
     try:
         user = CustomUser.objects.get(user_id=user_id, is_active=True)
         
-        # Check current password
+        # Kiểm tra mật khẩu hiện tại
         if not check_password(current_password, user.password_hash):
             return Response({
                 'success': False,
                 'message': 'Mật khẩu hiện tại không đúng'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Update password using raw SQL
-        new_password_hash = make_password(new_password)
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                UPDATE Users 
-                SET password_hash = %s, updated_at = %s
-                WHERE user_id = %s
-            """, [new_password_hash, datetime.now(), user_id])
+        # Cập nhật mật khẩu mới
+        user.password_hash = make_password(new_password)
+        user.updated_at = datetime.now()
+        user.save()
         
         return Response({
             'success': True,
@@ -287,4 +398,8 @@ def change_password(request):
             'success': False,
             'message': 'Người dùng không tồn tại'
         }, status=status.HTTP_404_NOT_FOUND)
-
+    except Exception as e:
+        return Response({
+            'success': False,
+            'message': f'Lỗi: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

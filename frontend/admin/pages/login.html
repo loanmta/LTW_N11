@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - OLD SCHOOL</title>
-    <link rel="stylesheet" href="../assets/css/auth.css">
+    <title>Đăng nhập Admin - OLD SCHOOL</title>
+    <link rel="stylesheet" href="/admin/assets/css/auth.css">
 </head>
 <body>
     <div class="auth-container">
@@ -16,88 +16,43 @@
                         <span class="logo-circle">OS</span>
                     </div>
                     <h1 class="brand-name">Old School</h1>
-                    <p class="brand-tagline">Fashion Style</p>
+                    <p class="brand-tagline">Admin Panel</p>
                 </div>
-                <p class="brand-description">Phong cách thời trang cổ điển, thanh lịch và sang trọng</p>
+                <p class="brand-description">Trang quản trị hệ thống</p>
             </div>
             
             <div class="auth-right">
                 <div class="auth-header">
-                    <h2>ĐĂNG NHẬP</h2>
-                    <p class="auth-subtitle">Đăng kí thành viên! Vui lòng đăng nhập</p>
+                    <h2>ĐĂNG NHẬP ADMIN</h2>
+                    <p class="auth-subtitle">Vui lòng đăng nhập để tiếp tục</p>
                 </div>
+                
+                <div id="loginError" style="display: none; color: #D32F2F; background: #FFEBEE; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;"></div>
                 
                 <form class="auth-form" id="loginForm">
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" id="loginEmail" placeholder="Email" required>
+                        <input type="email" id="username" name="username" placeholder="admin@oldschool.vn" required>
                     </div>
                     
                     <div class="form-group">
                         <label>Mật khẩu</label>
-                        <input type="password" id="loginPassword" placeholder="Password" required>
-                        <a href="#" class="forgot-link">Quên mật khẩu?</a>
+                        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
                     </div>
                     
                     <button type="submit" class="auth-btn">Đăng nhập</button>
                 </form>
                 
                 <div class="auth-footer">
-                    <p>Bạn chưa có tài khoản? <a href="#" onclick="showRegister()">Đăng ký ngay</a></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Register Section -->
-        <div class="auth-section hidden" id="registerSection">
-            <div class="auth-left">
-                <div class="brand">
-                    <div class="brand-logo">
-                        <span class="logo-circle">OS</span>
-                    </div>
-                    <h1 class="brand-name">Old School</h1>
-                    <p class="brand-tagline">Fashion Style</p>
-                </div>
-                <p class="brand-description">Phong cách thời trang cổ điển, thanh lịch và sang trọng</p>
-            </div>
-            
-            <div class="auth-right">
-                <div class="auth-header">
-                    <h2>ĐĂNG KÝ</h2>
-                    <p class="auth-subtitle">Tạo tài khoản mới</p>
-                </div>
-                
-                <form class="auth-form" id="registerForm">
-                    <div class="form-group">
-                        <label>Họ và Tên</label>
-                        <input type="text" id="registerName" placeholder="Nhập họ tên" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="registerEmail" placeholder="Nhập email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Mật khẩu</label>
-                        <input type="password" id="registerPassword" placeholder="Nhập mật khẩu" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Xác nhận mật khẩu</label>
-                        <input type="password" id="registerConfirmPassword" placeholder="Nhập lại mật khẩu" required>
-                    </div>
-                    
-                    <button type="submit" class="auth-btn">Đăng ký</button>
-                </form>
-                
-                <div class="auth-footer">
-                    <p>Bạn chưa có tài khoản? <a href="#" onclick="showLogin()">Đăng nhập ngay</a></p>
+                    <p><a href="/login.html">← Quay về trang khách hàng</a></p>
                 </div>
             </div>
         </div>
     </div>
     
-    <script src="../assets/js/auth.js"></script>
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+    </script>
+    <script src="/admin/assets/js/login.js"></script>
 </body>
 </html>

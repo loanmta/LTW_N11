@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Sản Phẩm - OLD SCHOOL Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <link rel="stylesheet" href="/admin/assets/css/product-form.css">
+</head>
+<body class="admin-body">
+    <!-- Top Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon"></span>
+                    <span class="logo-text">OLD SCHOOL</span>
+                </div>
+            </div>
+            
+            <nav class="header-nav">
+                <a href="/admin/pages/dashboard.html" class="nav-link">Tổng quan</a>
+                <a href="/admin/pages/products.html" class="nav-link active">Sản phẩm</a>
+                <a href="/admin/pages/orders.html" class="nav-link">Đơn hàng</a>
+                <a href="/admin/pages/reports.html" class="nav-link">Báo cáo</a>
+                <a href="/admin/pages/customers.html" class="nav-link">Khách hàng</a>
+            </nav>
+            
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm nhanh...">
+                </div>
+                <div class="admin-user" onclick="handleAdminUserClick()">
+                    <img src="/user/assets/images/avatar.svg" alt="Admin">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+        <div class="content-container">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="/admin/pages/products.html">Quản lý sản phẩm</a>
+                <span>/</span>
+                <span id="breadcrumbTitle">Thêm sản phẩm mới</span>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <!-- Left Column -->
+                <div class="form-left">
+                    <!-- Basic Info Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="8" stroke="#D32F2F" stroke-width="2"/>
+                                <path d="M10 6v4M10 14h.01" stroke="#D32F2F" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <h2>Thông tin cơ bản</h2>
+                        </div>
+                        
+                        <form id="productForm">
+                            <div class="form-group">
+                                <label>Tên sản phẩm <span class="required">*</span></label>
+                                <input type="text" name="name" placeholder="Nhập tên sản phẩm" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Danh mục <span class="required">*</span></label>
+                                    <select name="category" required>
+                                        <option value="">Chọn danh mục</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mã sản phẩm</label>
+                                    <input type="text" name="sku" placeholder="OS-12345">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mô tả sản phẩm</label>
+                                <textarea name="description" rows="5" placeholder="Nhập mô tả chi tiết sản phẩm ở đây..."></textarea>
+                            </div>
+                    </div>
+
+                    <!-- Price & Stock Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 2v16M6 6h8M5 14h10" stroke="#D32F2F" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <h2>Giá & Kho hàng</h2>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Giá bán (VNĐ) <span class="required">*</span></label>
+                                <input type="number" name="price" placeholder="500,000" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Số lượng tồn kho <span class="required">*</span></label>
+                                <input type="number" name="stock" placeholder="100" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Giá cũ (VNĐ)</label>
+                            <input type="number" name="old_price" placeholder="700,000">
+                            <small>Để trống nếu không có giá cũ</small>
+                        </div>
+                        </form>
+                    </div>
+
+                    <!-- Variants Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="3" y="3" width="6" height="6" stroke="#D32F2F" stroke-width="2"/>
+                                <rect x="11" y="3" width="6" height="6" stroke="#D32F2F" stroke-width="2"/>
+                                <rect x="3" y="11" width="6" height="6" stroke="#D32F2F" stroke-width="2"/>
+                                <rect x="11" y="11" width="6" height="6" stroke="#D32F2F" stroke-width="2"/>
+                            </svg>
+                            <h2>Biến thể màu sắc & Kích thước</h2>
+                        </div>
+
+                        <div class="variants-container">
+                            <div class="variant-group">
+                                <label>Kích thước</label>
+                                <div class="size-options">
+                                    <button type="button" class="size-btn" data-size="S">S</button>
+                                    <button type="button" class="size-btn" data-size="M">M</button>
+                                    <button type="button" class="size-btn" data-size="L">L</button>
+                                    <button type="button" class="size-btn" data-size="XL">XL</button>
+                                    <button type="button" class="size-btn add-size">+ Thêm</button>
+                                </div>
+                            </div>
+
+                            <div class="variant-group">
+                                <label>Bảng màu</label>
+                                <div class="color-options">
+                                    <button type="button" class="color-btn" data-color="Đen" style="background: #000"></button>
+                                    <button type="button" class="color-btn" data-color="Trắng" style="background: #fff; border: 1px solid #ddd"></button>
+                                    <button type="button" class="color-btn" data-color="Đỏ" style="background: #D32F2F"></button>
+                                    <button type="button" class="color-btn" data-color="Xanh" style="background: #2196F3"></button>
+                                    <button type="button" class="color-btn add-color">+</button>
+                                </div>
+                            </div>
+
+                            <div id="selectedVariants" class="selected-variants"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="form-right">
+                    <!-- Image Upload Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="2" y="4" width="16" height="12" rx="2" stroke="#D32F2F" stroke-width="2"/>
+                                <circle cx="7" cy="8" r="1.5" fill="#D32F2F"/>
+                                <path d="M2 13l4-4 3 3 5-5 4 4" stroke="#D32F2F" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <h2>Hình ảnh</h2>
+                        </div>
+
+                        <div class="image-upload-area">
+                            <div class="main-image-upload">
+                                <input type="file" id="mainImage" accept="image/*" hidden>
+                                <label for="mainImage" class="upload-label">
+                                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                        <rect x="8" y="12" width="32" height="28" rx="2" stroke="#ccc" stroke-width="2"/>
+                                        <circle cx="18" cy="20" r="3" fill="#ccc"/>
+                                        <path d="M8 32l8-8 6 6 10-10 8 8" stroke="#ccc" stroke-width="2"/>
+                                    </svg>
+                                    <p>Tải lên hình ảnh chính</p>
+                                    <small>Kích thước đề xuất: 1000×1000px</small>
+                                </label>
+                                <div id="mainImagePreview" class="image-preview"></div>
+                            </div>
+
+                            <div class="additional-images">
+                                <div class="image-slot">
+                                    <input type="file" id="image2" accept="image/*" hidden>
+                                    <label for="image2" class="upload-label-small">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 5v14M5 12h14" stroke="#999" stroke-width="2"/>
+                                        </svg>
+                                    </label>
+                                    <div id="image2Preview" class="image-preview-small"></div>
+                                </div>
+                                <div class="image-slot">
+                                    <input type="file" id="image3" accept="image/*" hidden>
+                                    <label for="image3" class="upload-label-small">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 5v14M5 12h14" stroke="#999" stroke-width="2"/>
+                                        </svg>
+                                    </label>
+                                    <div id="image3Preview" class="image-preview-small"></div>
+                                </div>
+                                <div class="image-slot">
+                                    <label class="upload-label-small disabled">
+                                        <span>Thêm ảnh</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <small class="image-note">Dung lượng tối đa 3MB. Khuyến nghị tỉ lệ 1:1 (1:1)</small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="window.location.href='/admin/pages/products.html'">
+                            Hủy bỏ
+                        </button>
+                        <button type="button" class="btn-delete" id="deleteBtn" onclick="openDeleteModal()" style="display: none;">
+                            Xóa sản phẩm
+                        </button>
+                        <button type="submit" form="productForm" class="btn-save">
+                            Lưu Sản Phẩm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="admin-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <p>&copy; 2026 OLD SCHOOL. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <a href="#">Điều khoản</a>
+                <a href="#">Chính sách</a>
+                <a href="#">Hỗ trợ</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <button class="delete-modal-close" onclick="closeDeleteModal()">×</button>
+            <div class="delete-icon">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="32" r="30" fill="#FFEBEE"/>
+                    <path d="M32 20v16M32 44h.02" stroke="#D32F2F" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h2>Xác nhận xóa sản phẩm?</h2>
+            <p>Hành động này không thể hoàn tác. Sản phẩm sẽ bị xóa vĩnh viễn khỏi hệ thống.</p>
+            <div class="delete-actions">
+                <button class="btn-confirm-delete" onclick="confirmDelete()">Xác nhận xóa</button>
+                <button class="btn-cancel-delete" onclick="closeDeleteModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin/assets/js/admin-api.js"></script>
+    <script src="/admin/assets/js/product-form.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Đơn Hàng - OLD SCHOOL Admin</title>
+    <link rel="stylesheet" href="/admin/assets/css/admin.css">
+    <link rel="stylesheet" href="/admin/assets/css/orders.css">
+</head>
+<body class="admin-body">
+    <!-- Top Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon"></span>
+                    <span class="logo-text">OLD SCHOOL</span>
+                </div>
+            </div>
+            
+            <nav class="header-nav">
+                <a href="/admin/pages/dashboard.html" class="nav-link">Tổng quan</a>
+                <a href="/admin/pages/products.html" class="nav-link">Sản phẩm</a>
+                <a href="/admin/pages/orders.html" class="nav-link active">Đơn hàng</a>
+                <a href="/admin/pages/reports.html" class="nav-link">Báo cáo</a>
+                <a href="/admin/pages/customers.html" class="nav-link">Khách hàng</a>
+            </nav>
+            
+            <div class="header-right">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm nhanh...">
+                </div>
+                <div class="admin-user" onclick="handleAdminUserClick()">
+                    <img src="/user/assets/images/avatar.svg" alt="Admin">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+        <div class="content-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-left">
+                    <h1 class="page-title">Quản lý đơn hàng</h1>
+                    <p class="page-subtitle">Quản lý và cập nhật trạng thái đơn hàng chuyển cho các đơn hàng của bạn.</p>
+                </div>
+                <div class="page-header-right">
+                    <div class="order-count">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M3 3h14l-1 10H4L3 3z" stroke="#D32F2F" stroke-width="2"/>
+                            <path d="M7 13v4M13 13v4" stroke="#D32F2F" stroke-width="2"/>
+                        </svg>
+                        <span id="totalOrders">12 Đơn hàng</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="orders-toolbar">
+                <div class="toolbar-left">
+                    <div class="search-input-wrapper">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+                            <path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <input type="text" id="searchOrders" placeholder="Tìm kiếm theo Mã đơn hàng..." class="search-input">
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <button class="filter-btn active" data-status="all" onclick="filterByStatus('all')">Tất cả</button>
+                    <button class="filter-btn" data-status="pending" onclick="filterByStatus('pending')">Chờ xác nhận</button>
+                    <button class="filter-btn" data-status="confirmed" onclick="filterByStatus('confirmed')">Đã xác nhận</button>
+                    <button class="filter-btn" data-status="shipping" onclick="filterByStatus('shipping')">Đang giao</button>
+                    <button class="filter-btn" data-status="completed" onclick="filterByStatus('completed')">Hoàn thành</button>
+                    <button class="filter-btn" data-status="cancelled" onclick="filterByStatus('cancelled')">Đã hủy</button>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="orders-table-container">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>MÃ ĐỚN HÀNG</th>
+                            <th>KHÁCH HÀNG</th>
+                            <th>NGÀY ĐẶT</th>
+                            <th>TỔNG TIỀN</th>
+                            <th>TRẠNG THÁI</th>
+                            <th>THAO TÁC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr>
+                            <td colspan="6" class="loading">Đang tải đơn hàng...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">HIỂN THỊ <span id="showingCount">5</span> CỦA <span id="totalCount">120</span> ĐƠN HÀNG</div>
+                <div class="pagination" id="pagination">
+                    <button class="pagination-btn" onclick="prevPage()">‹</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">...</button>
+                    <button class="pagination-btn">24</button>
+                    <button class="pagination-btn" onclick="nextPage()">›</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="admin-footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <p>&copy; 2026 OLD SCHOOL. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <a href="#">Điều khoản</a>
+                <a href="#">Chính sách</a>
+                <a href="#">Hỗ trợ</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/admin/assets/js/admin-api.js?v=4"></script>
+    <script src="/admin/assets/js/orders.js?v=4"></script>
+    <script>
+        function handleAdminUserClick() {
+            const userName = sessionStorage.getItem('userName') || sessionStorage.getItem('userEmail') || 'Admin';
+            const userEmail = sessionStorage.getItem('userEmail') || '';
+            
+            const existingMenu = document.querySelector('.admin-user-dropdown');
+            if (existingMenu) {
+                existingMenu.remove();
+                return;
+            }
+            
+            const menu = document.createElement('div');
+            menu.className = 'admin-user-dropdown';
+            menu.innerHTML = `
+                <div class="dropdown-header">
+                    <img src="/user/assets/images/avatar.svg" alt="Avatar" class="dropdown-avatar">
+                    <div class="dropdown-info">
+                        <div class="dropdown-name">${userName}</div>
+                        <div class="dropdown-email">${userEmail}</div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" onclick="window.location.href='/'">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Về trang chủ
+                </button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item logout-btn" onclick="logout(); event.stopPropagation();">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                    </svg>
+                    Đăng xuất
+                </button>
+            `;
+            
+            document.body.appendChild(menu);
+            
+            const avatarBtn = document.querySelector('.admin-user');
+            if (avatarBtn) {
+                const rect = avatarBtn.getBoundingClientRect();
+                menu.style.position = 'fixed';
+                menu.style.top = `${rect.bottom + 10}px`;
+                menu.style.right = `${window.innerWidth - rect.right}px`;
+            }
+            
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu(e) {
+                    if (!menu.contains(e.target) && !avatarBtn.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                });
+            }, 0);
+        }
+        
+        async function logout() {
+            const API_BASE_URL = 'http://127.0.0.1:8000/api';
+            
+            try {
+                await fetch(`${API_BASE_URL}/auth/logout/`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                sessionStorage.clear();
+                window.location.href = '/admin/pages/login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                sessionStorage.clear();
+                window.location.href = '/admin/pages/login.html';
+            }
+        }
+    </script>
+</body>
+</html>
