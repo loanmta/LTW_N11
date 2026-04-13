@@ -16,7 +16,7 @@ class Category(models.Model):
     
     class Meta:
         db_table = 'Categories'
-        managed = False  # Don't let Django manage this table
+        managed = True  # Don't let Django manage this table
     
     def __str__(self):
         return self.name
@@ -44,7 +44,7 @@ class Product(models.Model):
     
     class Meta:
         db_table = 'Products'
-        managed = False
+        managed = True
     
     def __str__(self):
         return self.name
@@ -63,7 +63,7 @@ class CustomUser(models.Model):
     
     class Meta:
         db_table = 'Users'
-        managed = False
+        managed = True
     
     def __str__(self):
         return self.email
@@ -84,7 +84,7 @@ class UserProfile(models.Model):
     
     class Meta:
         db_table = 'UserProfiles'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"Profile of {self.user.email}"
@@ -116,7 +116,7 @@ class Order(models.Model):
     
     class Meta:
         db_table = 'Orders'
-        managed = False
+        managed = True
         ordering = ['-created_at']
     
     def __str__(self):
@@ -138,7 +138,7 @@ class OrderItem(models.Model):
     
     class Meta:
         db_table = 'OrderItems'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.product_name} x {self.quantity}"
@@ -156,7 +156,7 @@ class CartItem(models.Model):
     
     class Meta:
         db_table = 'CartItems'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
@@ -176,7 +176,7 @@ class Review(models.Model):
     
     class Meta:
         db_table = 'Reviews'
-        managed = False
+        managed = True
     
     def __str__(self):
         return f"{self.name} - {self.product.name}"
@@ -199,7 +199,7 @@ class Voucher(models.Model):
     
     class Meta:
         db_table = 'Vouchers'
-        managed = False
+        managed = True
     
     def __str__(self):
         return self.code

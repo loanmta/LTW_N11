@@ -81,27 +81,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # SQL Server configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'OldSchoolDB',
-        'USER': 'sa',  # Thay bằng username của bạn
-        'PASSWORD': '123',  # Thay bằng password của bạn
-        'HOST': 'LAPTOP-FC7B59J6',  # Hoặc localhost
-        'PORT': '',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
-
-# SQLite for development (uncomment to use)
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'mssql',
+#         'NAME': 'OldSchoolDB',
+#         'PORT': '',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#             'extra_params': 'Trusted_Connection=yes;',
+#         },
 #     }
 # }
+
+# SQLite for development
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation

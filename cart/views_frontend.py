@@ -23,6 +23,11 @@ def serve_frontend(request, path=''):
         'order_detail.html': 'order_detail.html',
         'product_detail.html': 'product_detail.html',
         'admin_dashboard.html': 'admin/pages/dashboard.html',
+        'admin_orders.html': 'admin/pages/orders.html',
+        'admin_order_detail.html': 'admin/pages/order_detail.html',
+        'admin_customers.html': 'admin/pages/customers.html',
+        'admin_products.html': 'admin/pages/products.html',
+        'admin_reports.html': 'admin/pages/reports.html',
     }
     
     html_file = route_map.get(path, path)

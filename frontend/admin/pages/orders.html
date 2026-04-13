@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đơn hàng - Old School</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --bg-pink: #fff5f5;
+            --text-main: #101828;
+            --text-muted: #667085;
+            --border-color: #EAECF0;
+            --white: #FFFFFF;
+            --status-orange-text: #E78213; --status-orange-bg: #FFF9F5; --status-orange-border: #FCD3B5;
+            --status-blue-text: #2E90FA; --status-blue-bg: #F0F9FF; --status-blue-border: #B9E6FE;
+            --status-green-text: #12B76A; --status-green-bg: #ECFDF3; --status-green-border: #A6F4C5;
+            --status-gray-text: #475467; --status-gray-bg: #F9FAFB; --status-gray-border: #EAECF0;
+            --status-red-text: #B42318; --status-red-bg: #FEF3F2; --status-red-border: #FECDCA;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-pink); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app-container { width: 100%; min-height: 100vh; }
+        .header { display: flex; background: white; padding: 15px 40px; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { color: #e53935; font-weight: 900; font-size: 22px; display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+        .logo .dot { width: 24px; height: 24px; background: #e53935; border-radius: 50%; display: inline-block; }
+        .nav { display: flex; gap: 30px; font-weight: 600; color: #888; font-size: 16px; align-items: center; }
+        .nav a { text-decoration: none; color: #888; padding-bottom: 5px; transition: 0.2s; }
+        .nav a:hover { color: #e53935; }
+        .nav .active { color: #e53935; border-bottom: 2px solid #e53935; }
+        .user-section { display: flex; gap: 15px; align-items: center; }
+        .search-bar { background: #f5f5f5; border: none; padding: 10px 20px; border-radius: 20px; outline: none; width: 200px; font-family: inherit; }
+        .avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; cursor: pointer; }
+        .main-content { padding: 40px; max-width: 1300px; margin: 0 auto; }
+        .panel { background-color: var(--white); border-radius: 12px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(16,24,40,0.05); }
+        .top-panel { padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 28px; font-weight: 700; color: #101828; margin-bottom: 6px; }
+        .page-header p { color: var(--text-muted); font-size: 14px; }
+        .summary-card { padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 16px; min-width: 200px; }
+        .summary-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: var(--status-green-bg); color: var(--status-green-text); }
+        .summary-info { display: flex; flex-direction: column; }
+        .summary-label { color: #98A2B3; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-value { font-size: 16px; font-weight: 600; color: #101828; }
+        .toolbar-panel { padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .search-input-wrapper { display: flex; align-items: center; gap: 8px; background-color: #F9FAFB; padding: 10px 16px; border-radius: 8px; width: 320px; }
+        .search-input-wrapper i { color: #98A2B3; width: 16px; }
+        .search-input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); font-family: inherit; }
+        .search-input-wrapper input::placeholder { color: #98A2B3; }
+        .status-tabs { display: flex; gap: 32px; }
+        .tab-btn { border: none; background-color: transparent; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: color 0.2s; font-family: inherit; }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { color: #e53935; }
+        .order-table { width: 100%; border-collapse: collapse; }
+        .order-table th { text-align: left; padding: 20px 32px; font-weight: 600; color: #98A2B3; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); }
+        .order-table th.text-center, .order-table td.text-center { text-align: center; }
+        .order-table td { padding: 24px 32px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        .order-table tr:last-child td { border-bottom: none; }
+        .order-table tr:hover td { background-color: #fafafa; }
+        .text-red { color: #e53935 !important; font-weight: 700; }
+        .font-medium { font-weight: 600; }
+        .text-main { color: #101828; }
+        .text-muted { color: var(--text-muted); }
+        .action-link { text-decoration: none; font-weight: 600; font-size: 14px; color: #e53935; cursor: pointer; background: none; border: none; font-family: inherit; }
+        .action-link:hover { text-decoration: underline; }
+        .status-dropdown { position: relative; display: inline-block; }
+        .status-btn { padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; font-family: inherit; border: 1px solid; }
+        .status-btn .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-orange { color: var(--status-orange-text); background-color: var(--status-orange-bg); border-color: var(--status-orange-border); }
+        .status-orange .dot { background-color: var(--status-orange-text); }
+        .status-blue { color: var(--status-blue-text); background-color: var(--status-blue-bg); border-color: var(--status-blue-border); }
+        .status-blue .dot { background-color: var(--status-blue-text); }
+        .status-green { color: var(--status-green-text); background-color: var(--status-green-bg); border-color: var(--status-green-border); }
+        .status-green .dot { background-color: var(--status-green-text); }
+        .status-gray { color: var(--status-gray-text); background-color: var(--status-gray-bg); border-color: var(--status-gray-border); }
+        .status-gray .dot { background-color: var(--status-gray-text); }
+        .status-red { color: var(--status-red-text); background-color: var(--status-red-bg); border-color: var(--status-red-border); }
+        .status-red .dot { background-color: var(--status-red-text); }
+        .dropdown-menu { display: none; position: absolute; top: calc(100% + 4px); left: 0; background-color: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color); min-width: 160px; z-index: 10; padding: 4px; }
+        .dropdown-item { padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; color: var(--text-main); }
+        .dropdown-item:hover { background-color: #F9FAFB; }
+        .pagination-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; border-top: 1px solid var(--border-color); }
+        .pagination-info { color: #98A2B3; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pagination-controls { display: flex; align-items: center; gap: 8px; }
+        .page-btn { min-width: 32px; height: 32px; border-radius: 6px; border: none; background-color: transparent; color: var(--text-main); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+        .page-btn:hover { background-color: #F9FAFB; }
+        .page-btn.active { background-color: #e53935; color: var(--white); }
+        .page-dots { color: var(--text-muted); font-weight: 600; }
+        .icon-btn { cursor: pointer; color: #98A2B3; display: flex; align-items: center; justify-content: center; }
+        .empty-row td { text-align: center; padding: 60px; color: #98A2B3; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="header">
+        <span class="logo" onclick="window.location.href='/dashboard/'"><span class="dot"></span> OLD SCHOOL</span>
+        <div class="nav">
+            <a href="/dashboard/">Tổng quan</a>
+            <a href="/manage/products.html">Sản phẩm</a>
+            <a href="/manage/orders.html" class="active">Đơn hàng</a>
+            <a href="/manage/reports.html">Báo cáo</a>
+            <a href="/manage/customers.html">Khách hàng</a>
+        </div>
+        <div class="user-section">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
+            <div class="avatar"></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="panel top-panel">
+            <div class="page-header">
+                <h1>Quản lý đơn hàng</h1>
+                <p>Quản lý và cập nhật tiến độ vận chuyển cho các đơn hàng của bạn.</p>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">
+                    <i data-feather="trending-up" style="width:20px;height:20px;"></i>
+                </div>
+                <div class="summary-info">
+                    <span class="summary-label">TỔNG ĐƠN</span>
+                    <span class="summary-value" id="totalOrdersCount">...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel toolbar-panel">
+            <div class="search-input-wrapper">
+                <i data-feather="search"></i>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm theo Mã đơn hàng...">
+            </div>
+            <div class="status-tabs">
+                <button class="tab-btn active" data-status="">Tất cả</button>
+                <button class="tab-btn" data-status="pending">Chờ xác nhận</button>
+                <button class="tab-btn" data-status="processing">Đã xác nhận</button>
+                <button class="tab-btn" data-status="shipped">Đang giao</button>
+                <button class="tab-btn" data-status="delivered">Hoàn thành</button>
+                <button class="tab-btn" data-status="cancelled">Đã hủy</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th width="15%">MÃ ĐƠN HÀNG</th>
+                        <th width="20%">KHÁCH HÀNG</th>
+                        <th width="15%">NGÀY ĐẶT</th>
+                        <th width="15%">TỔNG TIỀN</th>
+                        <th width="20%" class="text-center">TRẠNG THÁI</th>
+                        <th width="15%" class="text-center">THAO TÁC</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <tr class="empty-row"><td colspan="6">Đang tải...</td></tr>
+                </tbody>
+            </table>
+            <div class="pagination-wrapper">
+                <div class="pagination-info" id="paginationInfo"></div>
+                <div class="pagination-controls" id="paginationControls"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const API = 'http://127.0.0.1:8000/api';
+    let currentPage = 1;
+    let currentStatus = '';
+    let currentSearch = '';
+    let totalCount = 0;
+    const PAGE_SIZE = 10;
+
+    const statusMap = {
+        pending:    { label: 'CHỜ XÁC NHẬN', cls: 'status-orange' },
+        processing: { label: 'ĐÃ XÁC NHẬN',  cls: 'status-gray' },
+        shipped:    { label: 'ĐANG GIAO',     cls: 'status-blue' },
+        delivered:  { label: 'HOÀN THÀNH',    cls: 'status-green' },
+        cancelled:  { label: 'ĐÃ HỦY',        cls: 'status-red' },
+    };
+
+    async function loadOrders(page = 1) {
+        currentPage = page;
+        let url = `${API}/admin/orders/?page=${page}&page_size=${PAGE_SIZE}`;
+        if (currentStatus) url += `&status=${currentStatus}`;
+        if (currentSearch) url += `&search=${encodeURIComponent(currentSearch)}`;
+
+        try {
+            const res = await fetch(url, { credentials: 'include' });
+            const data = await res.json();
+            const orders = data.results || data;
+            totalCount = data.count || orders.length;
+            document.getElementById('totalOrdersCount').textContent = totalCount + ' đơn';
+            renderOrders(orders);
+            renderPagination(totalCount);
+        } catch (e) {
+            document.getElementById('ordersTableBody').innerHTML = '<tr class="empty-row"><td colspan="6">Không thể tải dữ liệu</td></tr>';
+        }
+    }
+
+    function renderOrders(orders) {
+        const tbody = document.getElementById('ordersTableBody');
+        if (!orders.length) {
+            tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Không có đơn hàng nào</td></tr>';
+            return;
+        }
+        tbody.innerHTML = orders.map(o => {
+            const s = statusMap[o.status] || { label: o.status.toUpperCase(), cls: 'status-gray' };
+            const date = new Date(o.created_at).toLocaleDateString('vi-VN');
+            const total = Number(o.total).toLocaleString('vi-VN') + 'đ';
+            return `<tr data-id="${o.order_id}">
+                <td class="text-red">${o.order_number}</td>
+                <td class="font-medium text-main">${o.full_name}</td>
+                <td class="text-muted">${date}</td>
+                <td class="font-medium text-main">${total}</td>
+                <td class="text-center">
+                    <div class="status-dropdown">
+                        <button class="status-btn ${s.cls}" onclick="toggleDropdown(this)">
+                            <span class="dot"></span> ${s.label}
+                        </button>
+                        <div class="dropdown-menu" data-order-id="${o.order_id}"></div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <a href="/manage/order_detail.html?id=${o.order_id}" class="action-link">Chi tiết</a>
+                </td>
+            </tr>`;
+        }).join('');
+        feather.replace();
+    }
+
+    function renderPagination(total) {
+        const totalPages = Math.ceil(total / PAGE_SIZE);
+        const start = (currentPage - 1) * PAGE_SIZE + 1;
+        const end = Math.min(currentPage * PAGE_SIZE, total);
+        document.getElementById('paginationInfo').textContent = `HIỂN THỊ ${start}-${end} CỦA ${total} ĐƠN HÀNG`;
+
+        let html = `<div class="icon-btn" onclick="changePage(${currentPage - 1})"><i data-feather="chevron-left" style="width:16px;"></i></div>`;
+        for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+        }
+        if (totalPages > 5) html += `<span class="page-dots">...</span><button class="page-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+        html += `<div class="icon-btn" onclick="changePage(${currentPage + 1})"><i data-feather="chevron-right" style="width:16px;"></i></div>`;
+        document.getElementById('paginationControls').innerHTML = html;
+        feather.replace();
+    }
+
+    function changePage(page) {
+        const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+        if (page < 1 || page > totalPages) return;
+        loadOrders(page);
+    }
+
+    function toggleDropdown(btn) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            if (m !== btn.nextElementSibling) { m.style.display = 'none'; }
+        });
+        const menu = btn.nextElementSibling;
+        if (!menu) return;
+        if (menu.style.display === 'block') { menu.style.display = 'none'; return; }
+        if (!menu.innerHTML.trim()) {
+            menu.innerHTML = Object.entries(statusMap).map(([k, v]) =>
+                `<div class="dropdown-item" onclick="selectStatus(this,'${k}','${v.label}','${v.cls}')">${v.label}</div>`
+            ).join('');
+        }
+        menu.style.display = 'block';
+    }
+
+    async function selectStatus(item, statusKey, label, cls) {
+        const menu = item.closest('.dropdown-menu');
+        const orderId = menu.dataset.orderId;
+        const btn = menu.previousElementSibling;
+        menu.style.display = 'none';
+
+        try {
+            const res = await fetch(`${API}/admin/orders/${orderId}/update_status/`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ status: statusKey })
+            });
+            if (res.ok) {
+                btn.className = `status-btn ${cls}`;
+                btn.innerHTML = `<span class="dot"></span> ${label}`;
+            } else {
+                alert('Cập nhật thất bại');
+            }
+        } catch (e) { alert('Lỗi kết nối'); }
+    }
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.status-dropdown')) {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.style.display = 'none');
+        }
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentStatus = btn.dataset.status;
+            loadOrders(1);
+        });
+    });
+
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') { currentSearch = e.target.value; loadOrders(1); }
+    });
+
+    // Auth check
+    if (sessionStorage.getItem('userRole') !== 'admin') {
+        alert('Bạn không có quyền truy cập!');
+        window.location.href = '/login.html';
+    }
+
+    loadOrders();
+    feather.replace();
+</script>
+</body>
+</html>

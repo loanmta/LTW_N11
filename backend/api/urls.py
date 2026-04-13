@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     ProductViewSet, CartItemViewSet, OrderViewSet,
-    ReviewViewSet, UserProfileViewSet, CategoryViewSet, VoucherViewSet
+    ReviewViewSet, UserProfileViewSet, CategoryViewSet, VoucherViewSet,
+    AdminOrderViewSet, AdminCustomerViewSet
 )
 from .auth_views import register, login, logout, check_auth, profile, change_password
 
@@ -14,6 +15,8 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'reviews', ReviewViewSet, basename='review')
 router.register(r'profile', UserProfileViewSet, basename='profile')
 router.register(r'vouchers', VoucherViewSet, basename='voucher')
+router.register(r'admin/orders', AdminOrderViewSet, basename='admin-order')
+router.register(r'admin/customers', AdminCustomerViewSet, basename='admin-customer')
 
 urlpatterns = [
     # Authentication endpoints

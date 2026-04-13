@@ -175,9 +175,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     
     def get_queryset(self):
+        user_id = self.request.session.get('user_id')
+        if user_id:
+            try:
+                user = CustomUser.objects.get(user_id=user_id)
+                return Order.objects.filter(user=user)
+            except CustomUser.DoesNotExist:
+                pass
+                
         session_key = self.request.session.session_key
-        if self.request.user.is_authenticated:
-            return Order.objects.filter(user=self.request.user)
         return Order.objects.filter(session_key=session_key)
     
     def create(self, request):
@@ -225,9 +231,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         # Generate order number
         order_number = f"ORD{uuid.uuid4().hex[:8].upper()}"
         
+        # Get user if logged in
+        user_id = request.session.get('user_id')
+        user = None
+        if user_id:
+            try:
+                user = CustomUser.objects.get(user_id=user_id)
+            except CustomUser.DoesNotExist:
+                pass
+
         # Create order
         order = Order.objects.create(
             order_number=order_number,
+            user=user,
             session_key=session_key,
             full_name=full_name,
             phone=phone,
@@ -287,8 +303,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return UserProfile.objects.filter(user=self.request.user)
+        user_id = self.request.session.get('user_id')
+        if user_id:
+            try:
+                user = CustomUser.objects.get(user_id=user_id)
+                return UserProfile.objects.filter(user=user)
+            except CustomUser.DoesNotExist:
+                pass
         return UserProfile.objects.none()
 
 
@@ -311,3 +332,99 @@ class VoucherViewSet(viewsets.ModelViewSet):
                 'valid': False,
                 'message': 'Mã giảm giá không hợp lệ'
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminOrderViewSet(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        queryset = Order.objects.all().order_by('-created_at')
+
+        # Filter by status
+        status_filter = self.request.query_params.get('status')
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Search by order_number or full_name
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                order_number__icontains=search
+            ) | queryset.filter(
+                full_name__icontains=search
+            )
+
+        return queryset
+
+    @action(detail=True, methods=['patch'])
+    def update_status(self, request, pk=None):
+        order = self.get_object()
+        status_val = request.data.get('status')
+        valid_statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
+        if status_val in valid_statuses:
+            order.status = status_val
+            order.save()
+            return Response({'success': True, 'message': 'Cập nhật trạng thái thành công'})
+        return Response({'success': False, 'message': 'Trạng thái không hợp lệ'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminCustomerViewSet(viewsets.ModelViewSet):
+    serializer_class = CustomUserSerializer
+
+    def get_queryset(self):
+        queryset = CustomUser.objects.filter(role='user').order_by('-created_at')
+
+        # Search by full_name, email, phone
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(full_name__icontains=search) | \
+                       queryset.filter(email__icontains=search) | \
+                       queryset.filter(phone__icontains=search)
+
+        # Filter by date (created_at date)
+        date_filter = self.request.query_params.get('date')
+        if date_filter:
+            queryset = queryset.filter(created_at__date=date_filter)
+
+        # Filter by month (YYYY-MM)
+        month_filter = self.request.query_params.get('month')
+        if month_filter:
+            try:
+                year, month = month_filter.split('-')
+                queryset = queryset.filter(created_at__year=year, created_at__month=month)
+            except ValueError:
+                pass
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        """Override list to include order_count for each customer"""
+        from django.db.models import Count
+        queryset = self.get_queryset().annotate(order_count=Count('order'))
+
+        # Pagination
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            data = []
+            for user in page:
+                s = self.get_serializer(user)
+                d = s.data
+                d['order_count'] = user.order_count
+                data.append(d)
+            return self.get_paginated_response(data)
+
+        data = []
+        for user in queryset:
+            s = self.get_serializer(user)
+            d = s.data
+            d['order_count'] = user.order_count
+            data.append(d)
+        return Response(data)
+
+    @action(detail=True, methods=['post'])
+    def toggle_status(self, request, pk=None):
+        user = self.get_object()
+        user.is_active = not user.is_active
+        user.save()
+        status_msg = "mở khóa" if user.is_active else "khóa"
+        return Response({'success': True, 'message': f'Đã {status_msg} tài khoản'})

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theo dõi đơn hàng - Old School</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-red: #D92D20;
+            --bg-pink: #FDF9F9;
+            --text-main: #101828;
+            --text-muted: #667085;
+            --border-color: #EAECF0;
+            --white: #FFFFFF;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-pink); color: var(--text-main); font-size: 14px; -webkit-font-smoothing: antialiased; }
+        .app-container { width: 100%; min-height: 100vh; }
+
+        /* Header */
+        .header { display: flex; background: white; padding: 15px 40px; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { color: #e53935; font-weight: 900; font-size: 22px; display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; font-family: 'Segoe UI', sans-serif; }
+        .logo .dot { width: 24px; height: 24px; background: #e53935; border-radius: 50%; display: inline-block; }
+        .nav { display: flex; gap: 30px; font-weight: 600; font-size: 16px; font-family: 'Segoe UI', sans-serif; }
+        .nav a { text-decoration: none; color: #888; padding-bottom: 5px; transition: 0.2s; }
+        .nav a:hover { color: #e53935; }
+        .nav .active { color: #e53935; border-bottom: 2px solid #e53935; }
+        .user-section { display: flex; gap: 15px; align-items: center; }
+        .search-bar { background: #f5f5f5; border: none; padding: 10px 20px; border-radius: 20px; outline: none; width: 200px; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+        .avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; }
+
+        /* Main */
+        .main-content { padding: 40px; max-width: 1300px; margin: 0 auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .page-header h1 { font-size: 30px; font-weight: 700; color: #101828; margin-bottom: 8px; }
+        .page-header p { color: var(--text-muted); font-size: 15px; }
+        .page-header p strong { color: #111; font-weight: 600; }
+        .header-actions { display: flex; gap: 12px; }
+        .btn { border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; text-decoration: none; font-family: 'Inter', sans-serif; }
+        .btn-outline { background-color: #F1F1F1; color: #444; }
+        .btn-outline:hover { background-color: #E2E2E2; }
+
+        .section-title { font-size: 20px; font-weight: 700; color: #111; margin: 30px 0 16px 0; }
+        .card { background-color: var(--white); border-radius: 20px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #F6F6F6; }
+
+        /* Product grid */
+        .product-grid { display: flex; justify-content: space-between; align-items: stretch; gap: 50px; }
+        .product-list { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+        .product-item { display: flex; align-items: center; gap: 20px; }
+        .product-item img { width: 70px; height: 90px; object-fit: cover; border-radius: 8px; background-color: #F9F9F9; }
+        .product-item h3 { font-size: 16px; font-weight: 600; color: #111; margin-bottom: 6px; }
+        .product-item p { color: #777; font-size: 13px; }
+        .order-summary { width: 320px; padding-left: 40px; border-left: 1px solid #EEE; display: flex; flex-direction: column; justify-content: center; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #666; font-size: 14px; }
+        .summary-row.total { margin-top: 10px; padding-top: 15px; border-top: 1px dashed #DDD; font-size: 18px; font-weight: 700; color: var(--primary-red); }
+        .summary-row.total .label { color: #111; }
+        .payment-method { margin-top: 15px; background-color: #FFF2F2; color: var(--primary-red); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; text-align: center; align-self: flex-start; }
+
+        /* Timeline */
+        .timeline-container { display: flex; justify-content: space-between; position: relative; padding: 20px 40px 10px 40px; }
+        .timeline-line { position: absolute; top: 40px; left: 80px; right: 80px; height: 3px; background: #EAEAEA; z-index: 1; }
+        .timeline-progress { position: absolute; top: 40px; left: 80px; height: 3px; background: var(--primary-red); z-index: 2; transition: width 0.5s ease; }
+        .timeline-step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 3; width: 120px; }
+        .step-icon { width: 44px; height: 44px; border-radius: 50%; background-color: #FFF; border: 2px solid #EAEAEA; display: flex; align-items: center; justify-content: center; color: #999; margin-bottom: 12px; }
+        .step-icon i { width: 20px; height: 20px; }
+        .timeline-step.active .step-icon, .timeline-step.completed .step-icon { background-color: var(--primary-red); border-color: var(--primary-red); color: #FFF; }
+        .step-label { font-weight: 600; font-size: 14px; color: #333; margin-bottom: 4px; text-align: center; }
+        .step-time { font-size: 12px; color: #888; text-align: center; }
+        .timeline-step.pending .step-label { color: #999; }
+        .timeline-step.pending .step-time { color: #AAA; }
+        .timeline-step.active .step-label { color: var(--primary-red); }
+
+        /* Shipping info */
+        .shipping-info-grid { display: flex; flex-direction: column; gap: 25px; }
+        .info-row { display: flex; align-items: flex-start; gap: 16px; }
+        .info-icon { width: 40px; height: 40px; border-radius: 50%; background-color: #FFF2F2; color: var(--primary-red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .info-icon i { width: 18px; height: 18px; }
+        .info-content .label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-content .value { font-size: 15px; color: #111; font-weight: 600; }
+        .info-content .sub-value { font-size: 14px; color: #666; margin-top: 4px; }
+        .copy-icon { color: var(--primary-red); margin-left: 8px; cursor: pointer; width: 14px; height: 14px; vertical-align: middle; }
+
+        .loading { text-align: center; padding: 80px; color: var(--text-muted); font-size: 16px; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="header">
+        <span class="logo" onclick="window.location.href='/dashboard/'"><span class="dot"></span> OLD SCHOOL</span>
+        <div class="nav">
+            <a href="/dashboard/">Tổng quan</a>
+            <a href="/manage/products.html">Sản phẩm</a>
+            <a href="/manage/orders.html" class="active">Đơn hàng</a>
+            <a href="/manage/reports.html">Báo cáo</a>
+            <a href="/manage/customers.html">Khách hàng</a>
+        </div>
+        <div class="user-section">
+            <input type="text" class="search-bar" placeholder="Tìm kiếm nhanh...">
+            <div class="avatar"></div>
+        </div>
+    </header>
+
+    <main class="main-content" id="mainContent">
+        <div class="loading">Đang tải...</div>
+    </main>
+</div>
+
+<script>
+    const API = 'http://127.0.0.1:8000/api';
+
+    // Auth check
+    if (sessionStorage.getItem('userRole') !== 'admin') {
+        alert('Bạn không có quyền truy cập!');
+        window.location.href = '/login.html';
+    }
+
+    // Get order ID from URL query param
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('id');
+
+    if (!orderId) {
+        window.location.href = '/admin/orders.html';
+    }
+
+    // Status timeline config
+    const statusSteps = [
+        { key: 'placed',      label: 'Đã đặt hàng',   icon: 'shopping-cart' },
+        { key: 'pending',     label: 'Chờ xác nhận',  icon: 'file-text' },
+        { key: 'processing',  label: 'Đã xác nhận',   icon: 'package' },
+        { key: 'shipped',     label: 'Đang giao hàng', icon: 'truck' },
+        { key: 'delivered',   label: 'Thành công',    icon: 'check-circle' },
+    ];
+
+    const statusProgressMap = {
+        pending:    1,
+        processing: 2,
+        shipped:    3,
+        delivered:  4,
+        cancelled:  0,
+    };
+
+    const paymentLabels = {
+        cod: 'Thanh toán khi nhận hàng (COD)',
+        qr:  'Chuyển khoản / QR Code',
+    };
+
+    async function loadOrderDetail() {
+        try {
+            const res = await fetch(`${API}/admin/orders/${orderId}/`, { credentials: 'include' });
+            if (!res.ok) throw new Error('Not found');
+            const order = await res.json();
+            renderPage(order);
+        } catch (e) {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="loading">Không tìm thấy đơn hàng. <a href="/manage/orders.html" style="color:var(--primary-red)">Quay lại</a></div>`;
+        }
+    }
+
+    function renderPage(order) {
+        const date = new Date(order.created_at).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+        const activeStep = statusProgressMap[order.status] ?? 1;
+        const progressPct = activeStep === 0 ? 0 : (activeStep / (statusSteps.length - 1)) * 100;
+
+        // Timeline steps HTML
+        const stepsHtml = statusSteps.map((step, i) => {
+            let cls = 'pending';
+            if (i < activeStep) cls = 'completed';
+            else if (i === activeStep) cls = 'active';
+            return `<div class="timeline-step ${cls}">
+                <div class="step-icon"><i data-feather="${step.icon}"></i></div>
+                <div class="step-label">${step.label}</div>
+                <div class="step-time">${i === 0 ? date : (i < activeStep ? '✓' : '—')}</div>
+            </div>`;
+        }).join('');
+
+        // Order items HTML
+        const itemsHtml = (order.items || []).map(item => `
+            <div class="product-item">
+                <img src="${item.product_image || 'https://via.placeholder.com/70x90?text=SP'}"
+                     onerror="this.src='https://via.placeholder.com/70x90?text=SP'" alt="${item.product_name}">
+                <div>
+                    <h3>${item.product_name}</h3>
+                    <p>Số lượng: ${item.quantity}${item.color ? ' | Màu: ' + item.color : ''}${item.size ? ' | Size: ' + item.size : ''}</p>
+                    <p style="margin-top:4px;font-weight:600;color:#111;">${Number(item.subtotal).toLocaleString('vi-VN')}đ</p>
+                </div>
+            </div>`).join('') || '<p style="color:#999;">Không có sản phẩm</p>';
+
+        const subtotal = Number(order.subtotal).toLocaleString('vi-VN');
+        const shipping = Number(order.shipping_fee).toLocaleString('vi-VN');
+        const discount = Number(order.discount).toLocaleString('vi-VN');
+        const total = Number(order.total).toLocaleString('vi-VN');
+
+        document.getElementById('mainContent').innerHTML = `
+            <div class="page-header">
+                <div>
+                    <h1>Theo dõi Đơn hàng</h1>
+                    <p>Mã đơn hàng: <strong>#${order.order_number}</strong> | Ngày đặt: ${date}</p>
+                </div>
+                <div class="header-actions">
+                    <a href="/manage/orders.html" class="btn btn-outline">Quay lại</a>
+                </div>
+            </div>
+
+            <h2 class="section-title">Thông tin sản phẩm</h2>
+            <div class="card">
+                <div class="product-grid">
+                    <div class="product-list">${itemsHtml}</div>
+                    <div class="order-summary">
+                        <div class="summary-row"><span>Tạm tính:</span><span>${subtotal}đ</span></div>
+                        ${Number(order.discount) > 0 ? `<div class="summary-row"><span>Giảm giá:</span><span>-${discount}đ</span></div>` : ''}
+                        <div class="summary-row"><span>Phí vận chuyển:</span><span>${shipping}đ</span></div>
+                        <div class="summary-row total"><span class="label">Tổng cộng:</span><span>${total}đ</span></div>
+                        <div class="payment-method">${paymentLabels[order.payment_method] || order.payment_method}</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Trạng thái vận chuyển</h2>
+            <div class="card">
+                <div class="timeline-container">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-progress" style="width: calc(${progressPct}% * (100% - 160px) / 100 + 0px);"></div>
+                    ${stepsHtml}
+                </div>
+            </div>
+
+            <h2 class="section-title">Thông tin vận chuyển</h2>
+            <div class="card">
+                <div class="shipping-info-grid">
+                    <div class="info-row">
+                        <div class="info-icon"><i data-feather="truck"></i></div>
+                        <div class="info-content">
+                            <div class="label">ĐƠN VỊ VẬN CHUYỂN</div>
+                            <div class="value">${order.shipping_company || 'Chưa cập nhật'}</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i data-feather="hash"></i></div>
+                        <div class="info-content">
+                            <div class="label">MÃ VẬN ĐƠN</div>
+                            <div class="value">
+                                ${order.tracking_number || 'Chưa có'}
+                                ${order.tracking_number ? `<i data-feather="copy" class="copy-icon" onclick="copyText('${order.tracking_number}')"></i>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-icon"><i data-feather="map-pin"></i></div>
+                        <div class="info-content">
+                            <div class="label">ĐỊA CHỈ NHẬN HÀNG</div>
+                            <div class="value">${order.full_name}</div>
+                            <div class="sub-value">${order.phone}<br>${order.address}${order.district ? ', ' + order.district : ''}${order.city ? ', ' + order.city : ''}</div>
+                        </div>
+                    </div>
+                    ${order.notes ? `
+                    <div class="info-row">
+                        <div class="info-icon"><i data-feather="message-square"></i></div>
+                        <div class="info-content">
+                            <div class="label">GHI CHÚ</div>
+                            <div class="value">${order.notes}</div>
+                        </div>
+                    </div>` : ''}
+                </div>
+            </div>`;
+
+        feather.replace();
+    }
+
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => alert('Đã sao chép: ' + text));
+    }
+
+    loadOrderDetail();
+</script>
+</body>
+</html>

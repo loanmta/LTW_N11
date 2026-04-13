@@ -42,8 +42,13 @@ urlpatterns = [
     path('product_detail.html', serve_frontend, {'path': 'product_detail.html'}, name='product_detail'),
     path('profile.html', serve_frontend, {'path': 'profile.html'}, name='profile'),
     
-    # Admin dashboard (custom)
+    # Admin dashboard (custom) - dùng /manage/ để tránh xung đột với Django Admin /admin/
     path('dashboard/', serve_frontend, {'path': 'admin_dashboard.html'}, name='admin_dashboard'),
+    path('manage/orders.html', serve_frontend, {'path': 'admin_orders.html'}, name='admin_orders'),
+    path('manage/order_detail.html', serve_frontend, {'path': 'admin_order_detail.html'}, name='admin_order_detail'),
+    path('manage/customers.html', serve_frontend, {'path': 'admin_customers.html'}, name='admin_customers'),
+    path('manage/products.html', serve_frontend, {'path': 'admin_products.html'}, name='admin_products'),
+    path('manage/reports.html', serve_frontend, {'path': 'admin_reports.html'}, name='admin_reports'),
 ]
 
 # Serve media files in development
