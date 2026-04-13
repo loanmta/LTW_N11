@@ -117,3 +117,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# Cấu hình gửi email ảo: In thẳng link reset pass ra màn hình Terminal để test
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
