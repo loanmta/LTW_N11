@@ -54,6 +54,31 @@ async function loadProductData(id) {
         
         updateSelectedVariants();
         
+        // Load images
+        if (product.image_url) {
+            const mainImagePreview = document.getElementById('mainImagePreview');
+            mainImagePreview.innerHTML = `<img src="${product.image_url}" alt="Preview">`;
+            mainImagePreview.classList.add('active');
+            const mainImageLabel = document.querySelector('label[for="mainImage"]');
+            if (mainImageLabel) mainImageLabel.style.display = 'none';
+        }
+        
+        if (product.image_2_url) {
+            const image2Preview = document.getElementById('image2Preview');
+            image2Preview.innerHTML = `<img src="${product.image_2_url}" alt="Preview">`;
+            image2Preview.classList.add('active');
+            const image2Label = document.querySelector('label[for="image2"]');
+            if (image2Label) image2Label.style.display = 'none';
+        }
+        
+        if (product.image_3_url) {
+            const image3Preview = document.getElementById('image3Preview');
+            image3Preview.innerHTML = `<img src="${product.image_3_url}" alt="Preview">`;
+            image3Preview.classList.add('active');
+            const image3Label = document.querySelector('label[for="image3"]');
+            if (image3Label) image3Label.style.display = 'none';
+        }
+        
         // Show delete button when editing
         const deleteBtn = document.getElementById('deleteBtn');
         if (deleteBtn) {

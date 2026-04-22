@@ -144,6 +144,8 @@ class CartItem(models.Model):
     session_key = models.CharField(max_length=255, blank=True, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, db_column='product_id')
     quantity = models.IntegerField(default=1)
+    color = models.CharField(max_length=50, blank=True, null=True)
+    size = models.CharField(max_length=20, blank=True, null=True)
     selected = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -93,6 +93,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         - product: Thông tin sản phẩm đầy đủ (nested, read-only)
         - product_id: ID sản phẩm (write-only, để thêm vào giỏ)
         - quantity: Số lượng
+        - color: Màu sắc đã chọn
+        - size: Kích cỡ đã chọn
         - selected: Đã chọn để thanh toán chưa
         - created_at: Ngày thêm vào giỏ
     
@@ -115,7 +117,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CartItem
-        fields = ['cart_item_id', 'product', 'product_id', 'quantity', 'selected', 'created_at']
+        fields = ['cart_item_id', 'product', 'product_id', 'quantity', 'color', 'size', 'selected', 'created_at']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

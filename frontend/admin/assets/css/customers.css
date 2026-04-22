@@ -52,20 +52,44 @@
     box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
 }
 
+.search-input {
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s;
+    min-width: 400px;
+    background: white;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #D32F2F;
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+}
+
 .btn-filter {
-    padding: 10px 24px;
+    padding: 12px 32px;
     background: #D32F2F;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.2);
 }
 
 .btn-filter:hover {
     background: #B71C1C;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    transform: translateY(-1px);
 }
 
 /* Customers Table */
@@ -95,6 +119,11 @@
     letter-spacing: 0.5px;
 }
 
+.customers-table th:nth-child(5),
+.customers-table th:nth-child(6) {
+    text-align: center;
+}
+
 .customers-table tbody tr {
     border-bottom: 1px solid #f0f0f0;
     transition: background 0.3s;
@@ -112,6 +141,11 @@
     padding: 20px;
     font-size: 14px;
     color: #333;
+}
+
+.customers-table td:nth-child(5),
+.customers-table td:nth-child(6) {
+    text-align: center;
 }
 
 .customer-id {
@@ -142,6 +176,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: center;
 }
 
 .btn-action {
@@ -156,6 +191,7 @@
     cursor: pointer;
     transition: all 0.3s;
     color: #666;
+    margin: 0 auto;
 }
 
 .btn-action:hover {
@@ -479,11 +515,6 @@
 .order-status.status-confirmed {
     background: #E3F2FD;
     color: #1976D2;
-}
-
-.order-status.status-packed {
-    background: #F3E5F5;
-    color: #7B1FA2;
 }
 
 .order-status.status-shipping {

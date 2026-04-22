@@ -216,19 +216,29 @@ async function editProduct(productId) {
 }
 
 // Delete Product
+let productToDelete = null;
+
 async function deleteProduct(productId) {
-    if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-        return;
-    }
+    productToDelete = productId;
+    document.getElementById('deleteModal').classList.add('active');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    productToDelete = null;
+}
+
+async function confirmDeleteProduct() {
+    if (!productToDelete) return;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/products/${productId}/`, {
+        const response = await fetch(`${API_BASE_URL}/products/${productToDelete}/`, {
             method: 'DELETE',
             credentials: 'include'
         });
         
         if (response.ok) {
-            alert('Đã xóa sản phẩm thành công');
+            closeDeleteModal();
             await loadProducts();
         } else {
             alert('Không thể xóa sản phẩm');

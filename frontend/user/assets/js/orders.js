@@ -65,11 +65,14 @@ async function loadOrders(status = 'all', search = '') {
         // Map frontend status to backend status
         if (status !== 'all') {
             if (status === 'pending') {
-                // "Chờ xác nhận" includes both pending and confirmed
-                params.status = 'pending,confirmed';
+                // "Chờ xác nhận" only pending
+                params.status = 'pending';
+            } else if (status === 'confirmed') {
+                // "Đã xác nhận" only confirmed
+                params.status = 'confirmed';
             } else if (status === 'shipping') {
-                // "Đang giao" includes packed and shipping
-                params.status = 'packed,shipping';
+                // "Đang giao" includes shipping only
+                params.status = 'shipping';
             } else {
                 params.status = status;
             }
@@ -83,9 +86,11 @@ async function loadOrders(status = 'all', search = '') {
         // Filter orders on frontend if needed
         if (status !== 'all' && orders.length > 0) {
             if (status === 'pending') {
-                orders = orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
+                orders = orders.filter(o => o.status === 'pending');
+            } else if (status === 'confirmed') {
+                orders = orders.filter(o => o.status === 'confirmed');
             } else if (status === 'shipping') {
-                orders = orders.filter(o => o.status === 'packed' || o.status === 'shipping');
+                orders = orders.filter(o => o.status === 'shipping');
             } else {
                 orders = orders.filter(o => o.status === status);
             }
@@ -163,7 +168,6 @@ function getStatusClass(status) {
     const classes = {
         'pending': 'status-pending',
         'confirmed': 'status-pending',
-        'packed': 'status-shipping',
         'shipping': 'status-shipping',
         'completed': 'status-completed',
         'cancelled': 'status-cancelled'
@@ -175,7 +179,6 @@ function getStatusText(status) {
     const texts = {
         'pending': 'Chờ xác nhận',
         'confirmed': 'Đã xác nhận',
-        'packed': 'Đã đóng gói',
         'shipping': 'Đang giao',
         'completed': 'Hoàn thành',
         'cancelled': 'Đã hủy'

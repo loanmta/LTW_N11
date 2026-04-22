@@ -130,11 +130,6 @@ function displayCustomers() {
                             <circle cx="12" cy="12" r="3"/>
                         </svg>
                     </button>
-                    <button class="btn-action delete" onclick="openDeleteModal('${customer.id || customer.user_id}', '${customer.name || customer.email}')" title="Xóa">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                        </svg>
-                    </button>
                 </div>
             </td>
         </tr>
@@ -297,7 +292,6 @@ function getStatusText(status) {
     const statusMap = {
         'pending': 'Chờ xác nhận',
         'confirmed': 'Đã xác nhận',
-        'packed': 'Đã đóng gói',
         'shipping': 'Đang giao',
         'completed': 'Hoàn thành',
         'cancelled': 'Đã hủy'
@@ -346,6 +340,39 @@ async function confirmDelete() {
         alert('Đã xóa khách hàng thành công');
     }
 }
+
+// Search Customers
+function searchCustomers() {
+    const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+        filteredCustomers = allCustomers;
+    } else {
+        filteredCustomers = allCustomers.filter(customer => {
+            const name = (customer.name || customer.full_name || '').toLowerCase();
+            const phone = (customer.phone || '').toLowerCase().replace(/\s/g, '');
+            const searchPhone = searchTerm.replace(/\s/g, '');
+            
+            return name.includes(searchTerm) || phone.includes(searchPhone);
+        });
+    }
+    
+    currentPage = 1;
+    displayCustomers();
+    updateCustomerCount();
+}
+
+// Add event listener for Enter key
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCustomers();
+            }
+        });
+    }
+});
 
 // Filter by Date
 function filterByDate() {

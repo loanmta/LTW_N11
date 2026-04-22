@@ -98,11 +98,21 @@ class APIClient {
      * POST /api/cart/add_item/
      * @param {number} productId - Product ID
      * @param {number} quantity - Số lượng
+     * @param {string} color - Màu sắc đã chọn
+     * @param {string} size - Kích cỡ đã chọn
      */
-    async addToCart(productId, quantity = 1) {
+    async addToCart(productId, quantity = 1, color = null, size = null) {
+        const payload = { 
+            product_id: productId, 
+            quantity 
+        };
+        
+        if (color) payload.color = color;
+        if (size) payload.size = size;
+        
         return this.request('/cart/add_item/', {
             method: 'POST',
-            body: JSON.stringify({ product_id: productId, quantity }),
+            body: JSON.stringify(payload),
         });
     }
 

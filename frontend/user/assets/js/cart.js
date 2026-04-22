@@ -42,8 +42,8 @@ function displayCart(data) {
             </div>
             <div class="item-details">
                 <h3 class="item-name">${item.product.name}</h3>
-                <p class="item-color">Màu: ${item.product.color || 'Không xác định'}</p>
-                <p class="item-size">Size: ${item.product.size || 'Không xác định'}</p>
+                <p class="item-color">Màu: ${item.color || 'Không xác định'}</p>
+                <p class="item-size">Size: ${item.size || 'Không xác định'}</p>
             </div>
             <div class="item-quantity">
                 <button class="qty-btn minus" onclick="updateQuantity(${item.cart_item_id}, ${item.quantity - 1})">-</button>

@@ -75,7 +75,6 @@ function getStatusClass(status) {
     const classes = {
         'pending': 'status-pending',
         'confirmed': 'status-confirmed',
-        'packed': 'status-packed',
         'shipping': 'status-shipping',
         'completed': 'status-completed',
         'cancelled': 'status-cancelled'
@@ -87,7 +86,6 @@ function getStatusText(status) {
     const texts = {
         'pending': 'Chờ xác nhận',
         'confirmed': 'Đã xác nhận',
-        'packed': 'Đã đóng gói',
         'shipping': 'Đang giao',
         'completed': 'Hoàn thành',
         'cancelled': 'Đã hủy'

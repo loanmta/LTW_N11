@@ -329,6 +329,8 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def add_item(self, request):
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity', 1)
+        color = request.data.get('color')
+        size = request.data.get('size')
         
         if not product_id:
             return Response({
@@ -343,16 +345,27 @@ class CartItemViewSet(viewsets.ModelViewSet):
             request.session.create()
         session_key = request.session.session_key
         
-        # Get or create cart item
-        cart_item, created = CartItem.objects.get_or_create(
+        # Check if same product with same color and size already exists
+        cart_item = CartItem.objects.filter(
             session_key=session_key,
             product=product,
-            defaults={'quantity': quantity}
-        )
+            color=color,
+            size=size
+        ).first()
         
-        if not created:
+        if cart_item:
+            # Update quantity if exists
             cart_item.quantity += int(quantity)
             cart_item.save()
+        else:
+            # Create new cart item
+            cart_item = CartItem.objects.create(
+                session_key=session_key,
+                product=product,
+                quantity=quantity,
+                color=color,
+                size=size
+            )
         
         # Get cart count
         cart_count = CartItem.objects.filter(session_key=session_key).count()

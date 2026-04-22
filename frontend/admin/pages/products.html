@@ -131,6 +131,26 @@
         </div>
     </footer>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="delete-modal" id="deleteModal">
+        <div class="delete-modal-content">
+            <button class="delete-modal-close" onclick="closeDeleteModal()">×</button>
+            <div class="delete-icon">
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="60" cy="60" r="60" fill="#FFE5E5"/>
+                    <path d="M60 35L35 75H85L60 35Z" fill="#FF0000" stroke="#FF0000" stroke-width="3" stroke-linejoin="round"/>
+                    <line x1="60" y1="50" x2="60" y2="62" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="60" cy="68" r="2" fill="white"/>
+                </svg>
+            </div>
+            <h2>Xác nhận xóa sản phẩm?</h2>
+            <div class="delete-actions">
+                <button class="btn-confirm-delete" onclick="confirmDeleteProduct()">Xác nhận xóa</button>
+                <button class="btn-cancel-delete" onclick="closeDeleteModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/admin/assets/js/admin-api.js"></script>
     <script src="/admin/assets/js/products.js"></script>
     <script>

@@ -10,6 +10,7 @@ Module này xử lý tất cả các chức năng liên quan đến authenticati
 
 Sử dụng Django session để lưu trữ thông tin user
 """
+import re
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,6 +18,20 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.db import connection
 from cart.models import CustomUser, UserProfile
 from datetime import datetime
+
+
+def is_valid_phone(phone):
+    """Validate Vietnamese phone number format"""
+    if not phone:
+        return False
+    
+    # Remove spaces and dashes
+    clean_phone = re.sub(r'[\s-]', '', phone)
+    
+    # Check Vietnamese phone format: starts with 0, 10-11 digits
+    phone_pattern = r'^0[0-9]{9,10}$'
+    
+    return bool(re.match(phone_pattern, clean_phone))
 
 
 @api_view(['POST'])
@@ -283,16 +298,37 @@ def profile(request):
                     'message': 'Vui lòng nhập họ tên'
                 }, status=status.HTTP_400_BAD_REQUEST)
             
+            # Validate số điện thoại nếu có
+            if phone and not is_valid_phone(phone):
+                return Response({
+                    'success': False,
+                    'message': 'Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Cảnh báo về thông tin thiếu (chỉ log, không block)
+            missing_fields = []
+            if not phone:
+                missing_fields.append('Số điện thoại')
+            if not address:
+                missing_fields.append('Địa chỉ')
+            if not district:
+                missing_fields.append('Quận/Huyện')
+            if not city:
+                missing_fields.append('Tỉnh/Thành phố')
+            
+            if missing_fields:
+                print(f"User {user.email} cập nhật profile thiếu: {', '.join(missing_fields)}")
+            
             # Cập nhật thông tin user
             user.full_name = full_name
-            user.phone = phone
+            user.phone = phone or None  # Lưu None thay vì chuỗi rỗng
             user.save()
             
             # Cập nhật hoặc tạo UserProfile
             user_profile, created = UserProfile.objects.get_or_create(user=user)
-            user_profile.address = address
-            user_profile.city = city
-            user_profile.district = district
+            user_profile.address = address or None  # Lưu None thay vì chuỗi rỗng
+            user_profile.city = city or None
+            user_profile.district = district or None
             user_profile.save()
             
             # Cập nhật session

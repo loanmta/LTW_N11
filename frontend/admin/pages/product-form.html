@@ -247,13 +247,14 @@
         <div class="delete-modal-content">
             <button class="delete-modal-close" onclick="closeDeleteModal()">×</button>
             <div class="delete-icon">
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                    <circle cx="32" cy="32" r="30" fill="#FFEBEE"/>
-                    <path d="M32 20v16M32 44h.02" stroke="#D32F2F" stroke-width="4" stroke-linecap="round"/>
+                <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                    <circle cx="60" cy="60" r="60" fill="#FFE5E5"/>
+                    <path d="M60 35L35 75H85L60 35Z" fill="#FF0000" stroke="#FF0000" stroke-width="3" stroke-linejoin="round"/>
+                    <line x1="60" y1="50" x2="60" y2="62" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="60" cy="68" r="2" fill="white"/>
                 </svg>
             </div>
             <h2>Xác nhận xóa sản phẩm?</h2>
-            <p>Hành động này không thể hoàn tác. Sản phẩm sẽ bị xóa vĩnh viễn khỏi hệ thống.</p>
             <div class="delete-actions">
                 <button class="btn-confirm-delete" onclick="confirmDelete()">Xác nhận xóa</button>
                 <button class="btn-cancel-delete" onclick="closeDeleteModal()">Hủy</button>

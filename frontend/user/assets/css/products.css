@@ -203,40 +203,7 @@
 }
 
 .quick-add-btn {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    width: 44px;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    border-radius: 50%;
-    color: var(--primary-red);
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(15px) scale(0.9);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-}
-
-.product-card:hover .quick-add-btn {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-}
-
-.quick-add-btn:hover {
-    background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
-    color: white;
-    transform: translateY(0) scale(1.08);
-    box-shadow: 0 6px 20px rgba(211, 47, 47, 0.35);
-}
-
-.quick-add-btn:active {
-    transform: translateY(0) scale(0.96);
+    display: none;
 }
 
 /* Product Info */

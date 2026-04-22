@@ -88,14 +88,13 @@ function displayShippingTimeline(status, createdAt) {
     const container = document.getElementById('shippingTimeline');
     
     const statuses = [
-        { key: 'pending', title: 'Đã đặt hàng', date: formatDateTime(createdAt) },
-        { key: 'confirmed', title: 'Chờ xác nhận', date: '02:10, 10/10/2023' },
-        { key: 'packed', title: 'Đã xác nhận', date: '16:44, 10/10/2023' },
-        { key: 'shipping', title: 'Đang giao hàng', date: '09:00, 16/10/2023' },
-        { key: 'completed', title: 'Thành công', date: 'Dự kiến: 20:10' }
+        { key: 'pending', title: 'Đơn hàng đã đặt', date: formatDateTime(createdAt) },
+        { key: 'confirmed', title: 'Đã xác nhận', date: 'Chờ xác nhận' },
+        { key: 'shipping', title: 'Đang giao hàng', date: 'Chờ giao' },
+        { key: 'completed', title: 'Đã giao hàng', date: 'Hoàn thành' }
     ];
     
-    const statusOrder = ['pending', 'confirmed', 'packed', 'shipping', 'completed'];
+    const statusOrder = ['pending', 'confirmed', 'shipping', 'completed'];
     const currentIndex = statusOrder.indexOf(status);
     
     // Horizontal timeline

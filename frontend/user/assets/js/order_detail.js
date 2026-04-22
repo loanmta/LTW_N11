@@ -102,18 +102,12 @@ function updateTimeline(status) {
         steps[0].classList.add('completed');
         steps[1].classList.add('completed');
         if (steps[2]) steps[2].classList.add('active');
-    } else if (status === 'packed') {
-        steps[0].classList.add('completed');
-        steps[1].classList.add('completed');
-        steps[2].classList.add('completed');
-        if (steps[3]) steps[3].classList.add('active');
     } else if (status === 'shipping') {
         steps[0].classList.add('completed');
         steps[1].classList.add('completed');
         steps[2].classList.add('completed');
-        steps[3].classList.add('completed');
-        // Step 4 is active but NOT completed (still shipping)
-        if (steps[4]) steps[4].classList.add('active');
+        // Step 3 is active but NOT completed (still shipping)
+        if (steps[3]) steps[3].classList.add('active');
     } else if (status === 'completed' || status === 'delivered') {
         // All steps completed
         steps.forEach(step => step.classList.add('completed'));
@@ -163,7 +157,7 @@ function updateActionButtons(status) {
             <button class="btn-reorder" onclick="reorderItems()">Mua lại đơn hàng</button>
         `;
     } else {
-        // confirmed, packed - cannot cancel anymore
+        // confirmed - cannot cancel anymore
         container.innerHTML = `
             <button class="btn-reorder" onclick="reorderItems()">Mua lại đơn hàng</button>
         `;

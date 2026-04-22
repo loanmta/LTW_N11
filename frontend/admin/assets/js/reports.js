@@ -216,11 +216,120 @@ function updateProductLegend(products) {
 }
 
 // Update Revenue Chart
-function updateRevenueChart() {
+async function updateRevenueChart() {
     const filter = document.getElementById('revenueFilter').value;
     
-    // TODO: Load data based on filter
-    alert('Chức năng lọc theo ' + filter + ' sẽ được triển khai sau');
+    try {
+        // Get current date
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        
+        // Load orders from API
+        const response = await fetch(`${API_BASE_URL}/orders/`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch orders');
+        }
+        
+        const data = await response.json();
+        // Handle both array and object response
+        const orders = Array.isArray(data) ? data : (data.results || []);
+        
+        let labels = [];
+        let revenueData = [];
+        
+        if (filter === 'month') {
+            // Filter by month - show last 6 months
+            const monthsData = {};
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(currentYear, currentMonth - 1 - i, 1);
+                const monthKey = `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                monthsData[monthKey] = 0;
+            }
+            
+            // Calculate revenue for each month
+            orders.forEach(order => {
+                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
+                    const orderDate = new Date(order.created_at);
+                    const monthKey = `${String(orderDate.getMonth() + 1).padStart(2, '0')}/${orderDate.getFullYear()}`;
+                    
+                    if (monthsData.hasOwnProperty(monthKey)) {
+                        monthsData[monthKey] += parseFloat(order.total) || 0;
+                    }
+                }
+            });
+            
+            labels = Object.keys(monthsData);
+            revenueData = Object.values(monthsData).map(val => (val / 1000000).toFixed(1));
+            
+        } else if (filter === 'quarter') {
+            // Filter by quarter - show 4 quarters of current year
+            const quartersData = {
+                'Q1': 0,
+                'Q2': 0,
+                'Q3': 0,
+                'Q4': 0
+            };
+            
+            orders.forEach(order => {
+                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
+                    const orderDate = new Date(order.created_at);
+                    if (orderDate.getFullYear() === currentYear) {
+                        const month = orderDate.getMonth() + 1;
+                        let quarter;
+                        
+                        if (month <= 3) quarter = 'Q1';
+                        else if (month <= 6) quarter = 'Q2';
+                        else if (month <= 9) quarter = 'Q3';
+                        else quarter = 'Q4';
+                        
+                        quartersData[quarter] += parseFloat(order.total) || 0;
+                    }
+                }
+            });
+            
+            labels = Object.keys(quartersData);
+            revenueData = Object.values(quartersData).map(val => (val / 1000000).toFixed(1));
+            
+        } else if (filter === 'year') {
+            // Filter by year - show last 5 years
+            const yearsData = {};
+            
+            for (let i = 4; i >= 0; i--) {
+                const year = currentYear - i;
+                yearsData[year] = 0;
+            }
+            
+            orders.forEach(order => {
+                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
+                    const orderDate = new Date(order.created_at);
+                    const year = orderDate.getFullYear();
+                    
+                    if (yearsData.hasOwnProperty(year)) {
+                        yearsData[year] += parseFloat(order.total) || 0;
+                    }
+                }
+            });
+            
+            labels = Object.keys(yearsData);
+            revenueData = Object.values(yearsData).map(val => (val / 1000000).toFixed(1));
+        }
+        
+        // Update chart
+        if (revenueChart) {
+            revenueChart.data.labels = labels;
+            revenueChart.data.datasets[0].data = revenueData;
+            revenueChart.update();
+        }
+        
+    } catch (error) {
+        console.error('Error updating revenue chart:', error);
+        alert('Có lỗi xảy ra khi cập nhật biểu đồ: ' + error.message);
+    }
 }
 
 // Export Excel

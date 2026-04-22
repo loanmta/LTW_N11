@@ -60,6 +60,18 @@ function setupEventListeners() {
     if (passwordForm) {
         passwordForm.addEventListener('submit', handlePasswordChange);
     }
+    
+    // Clear error on input
+    const formInputs = document.querySelectorAll('.form-input');
+    formInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('error');
+            const errorElement = document.getElementById(this.id + 'Error');
+            if (errorElement) {
+                errorElement.classList.remove('show');
+            }
+        });
+    });
 }
 
 function switchTab(tabName) {
@@ -79,14 +91,51 @@ function switchTab(tabName) {
 async function handleProfileUpdate(e) {
     e.preventDefault();
     
+    // Clear previous errors
+    clearErrors();
+    
     const fullName = document.getElementById('fullName').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const address = document.getElementById('address').value.trim();
     const district = document.getElementById('district').value.trim();
     const city = document.getElementById('city').value.trim();
     
+    let hasError = false;
+    
+    // Validation cho họ tên (bắt buộc)
     if (!fullName) {
-        showToast('Vui lòng nhập họ tên', 'error');
+        showFieldError('fullName', 'Vui lòng nhập họ và tên');
+        hasError = true;
+    }
+    
+    // Validation cho số điện thoại
+    if (!phone) {
+        showFieldError('phone', 'Vui lòng nhập số điện thoại');
+        hasError = true;
+    } else if (!isValidPhone(phone)) {
+        showFieldError('phone', 'Số điện thoại không hợp lệ (10-11 số, bắt đầu bằng 0)');
+        hasError = true;
+    }
+    
+    // Validation cho địa chỉ
+    if (!address) {
+        showFieldError('address', 'Vui lòng nhập địa chỉ giao hàng');
+        hasError = true;
+    }
+    
+    // Validation cho quận/huyện
+    if (!district) {
+        showFieldError('district', 'Vui lòng nhập quận/huyện');
+        hasError = true;
+    }
+    
+    // Validation cho tỉnh/thành phố
+    if (!city) {
+        showFieldError('city', 'Vui lòng nhập tỉnh/thành phố');
+        hasError = true;
+    }
+    
+    if (hasError) {
         return;
     }
     
@@ -135,6 +184,32 @@ async function handleProfileUpdate(e) {
         console.error('Error updating profile:', error);
         showToast('Có lỗi xảy ra khi cập nhật', 'error');
     }
+}
+
+function showFieldError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorElement = document.getElementById(fieldId + 'Error');
+    
+    if (input) {
+        input.classList.add('error');
+    }
+    
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.add('show');
+    }
+}
+
+function clearErrors() {
+    // Remove error class from all inputs
+    document.querySelectorAll('.form-input.error').forEach(input => {
+        input.classList.remove('error');
+    });
+    
+    // Hide all error messages
+    document.querySelectorAll('.error-message.show').forEach(error => {
+        error.classList.remove('show');
+    });
 }
 
 async function handlePasswordChange(e) {
@@ -233,4 +308,16 @@ function showToast(message, type = 'success') {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
     }, 3000);
+}
+
+// Hàm validation số điện thoại Việt Nam
+function isValidPhone(phone) {
+    // Loại bỏ khoảng trắng và dấu gạch ngang
+    const cleanPhone = phone.replace(/[\s-]/g, '');
+    
+    // Kiểm tra định dạng số điện thoại Việt Nam
+    // Bắt đầu bằng 0, có 10-11 số
+    const phoneRegex = /^0[0-9]{9,10}$/;
+    
+    return phoneRegex.test(cleanPhone);
 }

@@ -320,8 +320,7 @@
 
 /* Summary Card */
 .summary-card {
-    position: sticky;
-    top: 90px;
+    /* Removed sticky positioning - let it scroll naturally */
 }
 
 .summary-row {

@@ -178,8 +178,24 @@ function setupActionButtons() {
     document.getElementById('btnAddCart').addEventListener('click', async function() {
         if (!currentProduct) return;
         
+        // Validate color and size selection
+        if (currentProduct.color && !selectedColor) {
+            alert('Vui lòng chọn màu sắc');
+            return;
+        }
+        
+        if (currentProduct.size && !selectedSize) {
+            alert('Vui lòng chọn kích cỡ');
+            return;
+        }
+        
         try {
-            const data = await api.addToCart(currentProduct.product_id, 1);
+            const data = await api.addToCart(
+                currentProduct.product_id, 
+                1,
+                selectedColor,
+                selectedSize
+            );
             if (data.success) {
                 updateCartBadge(data.cart_count);
                 showAddToCartPopup();
