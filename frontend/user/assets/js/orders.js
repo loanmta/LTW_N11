@@ -27,7 +27,8 @@ function setupEventListeners() {
         tab.addEventListener('click', function(e) {
             e.preventDefault();
             const status = this.getAttribute('data-status');
-            window.location.href = `orders.html?status=${status}`;
+            const currentPath = window.location.pathname;
+            window.location.href = `${currentPath}?status=${status}`;
         });
     });
     
@@ -35,16 +36,38 @@ function setupEventListeners() {
     const searchForm = document.querySelector('.search-form');
     const searchInput = document.querySelector('.search-input');
     
-    if (searchForm) {
+    console.log('Search form:', searchForm);
+    console.log('Search input:', searchInput);
+    
+    if (searchForm && searchInput) {
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const query = searchInput.value.trim();
+            const currentPath = window.location.pathname;
+            console.log('Search query:', query);
             if (query) {
-                window.location.href = `orders.html?status=${currentStatus}&search=${encodeURIComponent(query)}`;
+                window.location.href = `${currentPath}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
             } else {
-                window.location.href = `orders.html?status=${currentStatus}`;
+                window.location.href = `${currentPath}?status=${currentStatus}`;
             }
         });
+        
+        // Also handle Enter key on input
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = this.value.trim();
+                const currentPath = window.location.pathname;
+                console.log('Search query (Enter):', query);
+                if (query) {
+                    window.location.href = `${currentPath}?status=${currentStatus}&search=${encodeURIComponent(query)}`;
+                } else {
+                    window.location.href = `${currentPath}?status=${currentStatus}`;
+                }
+            }
+        });
+    } else {
+        console.error('Search form or input not found!');
     }
 }
 
@@ -62,42 +85,37 @@ async function loadOrders(status = 'all', search = '') {
     try {
         const params = {};
         
-        // Map frontend status to backend status
-        if (status !== 'all') {
-            if (status === 'pending') {
-                // "Chờ xác nhận" only pending
-                params.status = 'pending';
-            } else if (status === 'confirmed') {
-                // "Đã xác nhận" only confirmed
-                params.status = 'confirmed';
-            } else if (status === 'shipping') {
-                // "Đang giao" includes shipping only
-                params.status = 'shipping';
-            } else {
-                params.status = status;
-            }
+        // Add search parameter if provided
+        if (search) {
+            params.search = search;
         }
         
-        if (search) params.search = search;
+        // Map frontend status to backend status
+        if (status !== 'all') {
+            params.status = status;
+        }
+        
+        console.log('Loading orders with params:', params);
+        
+        // Show loading state
+        const container = document.querySelector('.orders-list');
+        container.innerHTML = '<div class="loading-state">Đang tìm kiếm đơn hàng...</div>';
         
         const data = await api.getOrders(params);
         let orders = Array.isArray(data) ? data : (data.results || []);
         
-        // Filter orders on frontend if needed
-        if (status !== 'all' && orders.length > 0) {
-            if (status === 'pending') {
-                orders = orders.filter(o => o.status === 'pending');
-            } else if (status === 'confirmed') {
-                orders = orders.filter(o => o.status === 'confirmed');
-            } else if (status === 'shipping') {
-                orders = orders.filter(o => o.status === 'shipping');
-            } else {
-                orders = orders.filter(o => o.status === status);
-            }
-        }
+        console.log('Received orders:', orders);
         
         allOrders = orders;
-        displayOrders(allOrders);
+        
+        // Show appropriate message based on search
+        if (orders.length === 0 && search) {
+            showSearchEmptyState(search);
+        } else if (orders.length === 0) {
+            showEmptyState();
+        } else {
+            displayOrders(allOrders);
+        }
     } catch (error) {
         console.error('Error loading orders:', error);
         showEmptyState();
@@ -152,6 +170,34 @@ function showEmptyState() {
             <a href="products.html" class="btn-shop-now">Mua sắm ngay</a>
         </div>
     `;
+}
+
+function showSearchEmptyState(searchQuery) {
+    const container = document.querySelector('.orders-list');
+    container.innerHTML = `
+        <div class="empty-state">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                <circle cx="50" cy="50" r="30" stroke="#E0E0E0" stroke-width="3" fill="none"/>
+                <line x1="72" y1="72" x2="95" y2="95" stroke="#E0E0E0" stroke-width="3" stroke-linecap="round"/>
+                <line x1="40" y1="45" x2="60" y2="45" stroke="#E0E0E0" stroke-width="2" stroke-linecap="round"/>
+                <line x1="40" y1="55" x2="60" y2="55" stroke="#E0E0E0" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3 class="empty-title">Không tìm thấy đơn hàng</h3>
+            <p class="empty-text">Không tìm thấy đơn hàng với mã "<strong>${searchQuery}</strong>"</p>
+            <button onclick="clearSearch()" class="btn-shop-now">Xóa tìm kiếm</button>
+        </div>
+    `;
+}
+
+function clearSearch() {
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status') || 'all';
+    window.location.href = `${currentPath}?status=${status}`;
+}
+
+function clearSearchFromButton() {
+    clearSearch();
 }
 
 function getStatusIcon(status) {

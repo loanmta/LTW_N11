@@ -151,6 +151,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
         headerContainer.innerHTML = createHeader();
+        
+        // Setup search functionality
+        setupHeaderSearch();
     }
 
     // Load footer
@@ -170,6 +173,54 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('Error loading cart count:', error);
     }
 });
+
+// Setup header search functionality
+function setupHeaderSearch() {
+    const searchInput = document.querySelector('.header .search-input');
+    if (!searchInput) return;
+    
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    // Update placeholder based on current page
+    if (currentPage === 'orders.html') {
+        searchInput.placeholder = 'Tìm kiếm đơn hàng...';
+    } else if (currentPage === 'products.html') {
+        searchInput.placeholder = 'Tìm kiếm sản phẩm...';
+    } else {
+        searchInput.placeholder = 'Tìm kiếm nhanh...';
+    }
+    
+    // Handle Enter key
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = this.value.trim();
+            
+            if (!query) return;
+            
+            // Route to appropriate page based on current location
+            if (currentPage === 'orders.html') {
+                // Search orders
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status') || 'all';
+                window.location.href = `/orders.html?status=${status}&search=${encodeURIComponent(query)}`;
+            } else if (currentPage === 'products.html') {
+                // Search products
+                window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+            } else {
+                // Default: go to products search
+                window.location.href = `/products.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+    });
+    
+    // Pre-fill search input if there's a search query in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+    if (searchQuery) {
+        searchInput.value = searchQuery;
+    }
+}
 
 
 // Handle user avatar click

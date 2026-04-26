@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đơn hàng của tôi - OLD SCHOOL</title>
-    <link rel="stylesheet" href="/user/assets/css/global.css?v=10">
-    <link rel="stylesheet" href="/user/assets/css/header.css?v=10">
-    <link rel="stylesheet" href="/user/assets/css/orders.css?v=10">
-    <link rel="stylesheet" href="/user/assets/css/footer.css?v=10">
+    <link rel="stylesheet" href="/user/assets/css/global.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/header.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/orders.css?v=11">
+    <link rel="stylesheet" href="/user/assets/css/footer.css?v=11">
 </head>
 <body>
     <!-- Header -->
@@ -31,17 +31,6 @@
                 <a href="?status=cancelled" class="filter-tab" data-status="cancelled">Đã hủy</a>
             </div>
 
-            <!-- Search Box -->
-            <div class="search-section">
-                <form class="search-form">
-                    <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
-                        <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    <input type="text" name="search" class="search-input" placeholder="Tìm kiếm theo Mã đơn hàng">
-                </form>
-            </div>
-
             <!-- Orders List -->
             <div class="orders-list">
                 <div class="loading-state">Đang tải đơn hàng...</div>
@@ -55,7 +44,8 @@
     <script src="/user/assets/js/api.js"></script>
     <script src="/user/assets/js/auth-check.js"></script>
     <script src="/user/assets/js/components.js"></script>
-    <script src="/user/assets/js/orders.js"></script>
+    <script src="/user/assets/js/orders-search.js"></script>
+    <script src="/user/assets/js/orders.js?v=11"></script>
     <script>
         // Check authentication on page load
         requireAuth();

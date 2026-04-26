@@ -189,6 +189,12 @@ function setupActionButtons() {
             return;
         }
         
+        // Check stock availability
+        if (currentProduct.stock_quantity <= 0) {
+            alert('Sản phẩm đã hết hàng');
+            return;
+        }
+        
         try {
             const data = await api.addToCart(
                 currentProduct.product_id, 
@@ -199,10 +205,16 @@ function setupActionButtons() {
             if (data.success) {
                 updateCartBadge(data.cart_count);
                 showAddToCartPopup();
+            } else if (data.error) {
+                alert(data.error);
             }
         } catch (error) {
             console.error('Error:', error);
-            showAddToCartPopup(); // Show anyway for demo
+            if (error.message && error.message.includes('stock')) {
+                alert('Số lượng sản phẩm trong kho không đủ');
+            } else {
+                showAddToCartPopup(); // Show anyway for demo
+            }
         }
     });
 }

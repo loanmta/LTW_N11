@@ -313,8 +313,9 @@ class CartItemViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         
-        # Calculate totals
-        subtotal = sum(float(item.product.price) * item.quantity for item in queryset)
+        # Calculate totals only for selected items
+        selected_items = queryset.filter(selected=True)
+        subtotal = sum(float(item.product.price) * item.quantity for item in selected_items)
         
         return Response({
             'items': serializer.data,
@@ -340,6 +341,13 @@ class CartItemViewSet(viewsets.ModelViewSet):
         
         product = get_object_or_404(Product, product_id=product_id)
         
+        # Check stock availability
+        if product.stock_quantity <= 0:
+            return Response({
+                'success': False,
+                'error': 'Sản phẩm đã hết hàng'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
         # Ensure session exists
         if not request.session.session_key:
             request.session.create()
@@ -353,16 +361,30 @@ class CartItemViewSet(viewsets.ModelViewSet):
             size=size
         ).first()
         
+        # Calculate total quantity (existing + new)
+        new_quantity = int(quantity)
+        if cart_item:
+            total_quantity = cart_item.quantity + new_quantity
+        else:
+            total_quantity = new_quantity
+        
+        # Check if total quantity exceeds stock
+        if total_quantity > product.stock_quantity:
+            return Response({
+                'success': False,
+                'error': f'Số lượng sản phẩm trong kho không đủ. Chỉ còn {product.stock_quantity} sản phẩm'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
         if cart_item:
             # Update quantity if exists
-            cart_item.quantity += int(quantity)
+            cart_item.quantity = total_quantity
             cart_item.save()
         else:
             # Create new cart item
             cart_item = CartItem.objects.create(
                 session_key=session_key,
                 product=product,
-                quantity=quantity,
+                quantity=new_quantity,
                 color=color,
                 size=size
             )
@@ -390,6 +412,13 @@ class CartItemViewSet(viewsets.ModelViewSet):
                 'message': 'Đã xóa sản phẩm khỏi giỏ hàng'
             })
         
+        # Check stock availability
+        if quantity > cart_item.product.stock_quantity:
+            return Response({
+                'success': False,
+                'error': f'Số lượng sản phẩm trong kho không đủ. Chỉ còn {cart_item.product.stock_quantity} sản phẩm'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
         cart_item.quantity = quantity
         cart_item.save()
         
@@ -397,6 +426,34 @@ class CartItemViewSet(viewsets.ModelViewSet):
             'success': True,
             'message': 'Đã cập nhật số lượng',
             'quantity': cart_item.quantity
+        })
+    
+    @action(detail=True, methods=['patch'])
+    def toggle_select(self, request, pk=None):
+        """Toggle cart item selection status"""
+        cart_item = self.get_object()
+        selected = request.data.get('selected', not cart_item.selected)
+        
+        cart_item.selected = selected
+        cart_item.save()
+        
+        return Response({
+            'success': True,
+            'message': 'Đã cập nhật trạng thái chọn',
+            'selected': cart_item.selected
+        })
+    
+    @action(detail=False, methods=['post'])
+    def select_all(self, request):
+        """Select or deselect all cart items"""
+        selected = request.data.get('selected', True)
+        queryset = self.get_queryset()
+        queryset.update(selected=selected)
+        
+        return Response({
+            'success': True,
+            'message': 'Đã cập nhật tất cả sản phẩm',
+            'selected': selected
         })
     
     @action(detail=False, methods=['delete'])
@@ -436,22 +493,32 @@ class OrderViewSet(viewsets.ModelViewSet):
             # Admin sees all orders
             queryset = Order.objects.all().order_by('-created_at')
             print(f"  Admin query - returning {queryset.count()} orders")
-            return queryset
-        
-        # Regular user sees only their orders
-        if user_id:
+        elif user_id:
+            # Regular user sees only their orders
             queryset = Order.objects.filter(user_id=user_id).order_by('-created_at')
             print(f"  User query - returning {queryset.count()} orders")
-            return queryset
-        
-        # Guest user sees orders by session
-        if session_key:
+        elif session_key:
+            # Guest user sees orders by session
             queryset = Order.objects.filter(session_key=session_key).order_by('-created_at')
             print(f"  Guest query - returning {queryset.count()} orders")
-            return queryset
+        else:
+            print(f"  No match - returning 0 orders")
+            return Order.objects.none()
         
-        print(f"  No match - returning 0 orders")
-        return Order.objects.none()
+        # Handle status filter
+        status = self.request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+            print(f"  Status filter applied: '{status}' - {queryset.count()} results")
+        
+        # Handle search parameter
+        search = self.request.query_params.get('search')
+        if search:
+            # Search by order number (case-insensitive)
+            queryset = queryset.filter(order_number__icontains=search)
+            print(f"  Search filter applied: '{search}' - {queryset.count()} results")
+        
+        return queryset
     
     def create(self, request):
         """Create new order from cart items"""
@@ -466,11 +533,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 'message': 'Không tìm thấy giỏ hàng'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        cart_items = CartItem.objects.filter(session_key=session_key)
+        # Only get selected cart items
+        cart_items = CartItem.objects.filter(session_key=session_key, selected=True)
         if not cart_items.exists():
             return Response({
                 'success': False,
-                'message': 'Giỏ hàng trống'
+                'message': 'Vui lòng chọn ít nhất một sản phẩm để thanh toán'
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Get customer info from request
@@ -489,7 +557,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                 'message': 'Thiếu thông tin khách hàng'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # Calculate totals
+        # Calculate totals only for selected items
         subtotal = sum(Decimal(str(item.product.price)) * item.quantity for item in cart_items)
         discount = Decimal('0')
         shipping_fee = Decimal('0')
@@ -528,7 +596,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             status='pending'
         )
         
-        # Create order items
+        # Create order items only for selected cart items
         for cart_item in cart_items:
             OrderItem.objects.create(
                 order=order,
@@ -537,12 +605,12 @@ class OrderViewSet(viewsets.ModelViewSet):
                 product_image=cart_item.product.image_url,
                 quantity=cart_item.quantity,
                 price=cart_item.product.price,
-                color=cart_item.product.color,
-                size=cart_item.product.size,
+                color=cart_item.color or cart_item.product.color,
+                size=cart_item.size or cart_item.product.size,
                 subtotal=Decimal(str(cart_item.product.price)) * cart_item.quantity
             )
         
-        # Clear cart
+        # Clear only selected cart items
         cart_items.delete()
         
         return Response({

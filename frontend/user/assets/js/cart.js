@@ -34,7 +34,8 @@ function displayCart(data) {
     cartItemsContainer.innerHTML = data.items.map(item => `
         <div class="cart-item" data-item-id="${item.cart_item_id}">
             <div class="item-checkbox">
-                <input type="checkbox" class="item-select" ${item.selected ? 'checked' : ''}>
+                <input type="checkbox" class="item-select" ${item.selected ? 'checked' : ''} 
+                       onchange="toggleItemSelect(${item.cart_item_id}, this.checked)">
             </div>
             <div class="item-image">
                 <img src="${item.product.image_url || 'https://via.placeholder.com/100x120'}" 
@@ -52,7 +53,7 @@ function displayCart(data) {
                 <button class="qty-btn plus" onclick="updateQuantity(${item.cart_item_id}, ${item.quantity + 1})">+</button>
             </div>
             <div class="item-price">
-                ${formatPrice(parseFloat(item.product.price) * item.quantity)}đ
+                ${formatPrice(parseFloat(item.product.price))}đ
             </div>
             <button class="item-delete" onclick="removeItem(${item.cart_item_id})">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -61,6 +62,13 @@ function displayCart(data) {
             </button>
         </div>
     `).join('');
+    
+    // Update select all checkbox
+    const selectAllCheckbox = document.getElementById('select-all');
+    if (selectAllCheckbox) {
+        const allSelected = data.items.every(item => item.selected);
+        selectAllCheckbox.checked = allSelected;
+    }
     
     // Update order summary
     updateOrderSummary(data);
@@ -141,19 +149,34 @@ async function updateQuantity(itemId, quantity) {
     }
 }
 
+async function toggleItemSelect(itemId, selected) {
+    try {
+        await api.toggleCartItemSelect(itemId, selected);
+        await loadCart();
+    } catch (error) {
+        console.error('Error toggling item select:', error);
+        alert('Không thể cập nhật trạng thái chọn');
+    }
+}
+
 async function removeItem(itemId) {
+    console.log('Attempting to remove item:', itemId);
+    
     if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
         return;
     }
     
     try {
-        await api.removeCartItem(itemId);
+        const response = await api.removeCartItem(itemId);
+        console.log('Remove item success:', response);
         await loadCart();
         updateCartBadge();
         showToast('Đã xóa sản phẩm khỏi giỏ hàng');
     } catch (error) {
         console.error('Error removing item:', error);
-        alert('Không thể xóa sản phẩm');
+        // Reload cart anyway to sync state
+        await loadCart();
+        updateCartBadge();
     }
 }
 
@@ -177,10 +200,14 @@ function setupEventListeners() {
     // Select all checkbox
     const selectAllCheckbox = document.getElementById('select-all');
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.item-select');
-            checkboxes.forEach(cb => cb.checked = this.checked);
-            // TODO: Update selected status in backend
+        selectAllCheckbox.addEventListener('change', async function() {
+            try {
+                await api.selectAllCartItems(this.checked);
+                await loadCart();
+            } catch (error) {
+                console.error('Error selecting all items:', error);
+                alert('Không thể cập nhật trạng thái chọn');
+            }
         });
     }
     
@@ -201,6 +228,14 @@ function setupEventListeners() {
                 alert('Giỏ hàng trống');
                 return;
             }
+            
+            // Check if any item is selected
+            const hasSelectedItems = cartData.items.some(item => item.selected);
+            if (!hasSelectedItems) {
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
+                return;
+            }
+            
             window.location.href = 'checkout.html';
         });
     }

@@ -500,13 +500,5 @@ function showToast(message) {
 
 // Format Revenue
 function formatRevenue(amount) {
-    if (amount >= 1000000000) {
-        return (amount / 1000000000).toFixed(1).replace('.', ',') + ' TỶ';
-    } else if (amount >= 1000000) {
-        return (amount / 1000000).toFixed(0) + ' TRIỆU';
-    } else if (amount >= 1000) {
-        return (amount / 1000).toFixed(0) + ' NGHÌN';
-    } else {
-        return amount.toLocaleString('vi-VN');
-    }
+    return Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }

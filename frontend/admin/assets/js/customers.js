@@ -148,19 +148,37 @@ async function viewCustomer(customerId) {
             return;
         }
         
-        // Get customer orders
-        const response = await fetch(`${API_BASE_URL}/orders/?user=${customerId}`, {
+        console.log('Loading orders for customer:', customerId, customer);
+        
+        // Get ALL orders (admin can see all)
+        const response = await fetch(`${API_BASE_URL}/orders/`, {
             credentials: 'include'
         });
         const ordersData = await response.json();
-        const orders = ordersData.results || ordersData;
+        const allOrders = ordersData.results || ordersData;
         
-        // Filter orders by this customer
-        const customerOrders = orders.filter(order => 
-            order.user == customerId || 
-            order.user_id == customerId ||
-            order.email === customer.email
-        );
+        console.log('All orders:', allOrders);
+        
+        // Filter orders by this customer - check multiple fields
+        const customerOrders = allOrders.filter(order => {
+            const matchUserId = order.user_id == customerId || order.user == customerId;
+            const matchEmail = order.email === customer.email;
+            const matchPhone = order.phone === customer.phone;
+            
+            console.log('Order:', order.order_number, {
+                user_id: order.user_id,
+                user: order.user,
+                email: order.email,
+                phone: order.phone,
+                matchUserId,
+                matchEmail,
+                matchPhone
+            });
+            
+            return matchUserId || matchEmail || matchPhone;
+        });
+        
+        console.log('Customer orders:', customerOrders);
         
         showCustomerDetailModal(customer, customerOrders);
     } catch (error) {

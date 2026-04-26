@@ -116,8 +116,17 @@ function displayCheckoutItems(data) {
         return;
     }
     
+    // Filter only selected items
+    const selectedItems = data.items.filter(item => item.selected !== false);
+    
+    if (selectedItems.length === 0) {
+        alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán');
+        window.location.href = 'cart.html';
+        return;
+    }
+    
     const container = document.getElementById('checkoutItems');
-    container.innerHTML = data.items.map(item => `
+    container.innerHTML = selectedItems.map(item => `
         <div class="checkout-item">
             <div class="checkout-item-image">
                 <img src="${item.product.image_url || 'https://via.placeholder.com/80x100'}" 
@@ -126,8 +135,8 @@ function displayCheckoutItems(data) {
             <div class="checkout-item-info">
                 <h3 class="checkout-item-name">${item.product.name}</h3>
                 <div class="checkout-item-options">
-                    <span class="option-text">Màu: ${item.product.color || 'N/A'}</span>
-                    <span class="option-text">Size: ${item.product.size || 'N/A'}</span>
+                    <span class="option-text">Màu: ${item.color || item.product.color || 'N/A'}</span>
+                    <span class="option-text">Size: ${item.size || item.product.size || 'N/A'}</span>
                     <span class="option-text">SL: ${item.quantity}</span>
                 </div>
             </div>
@@ -263,49 +272,54 @@ async function handlePlaceOrder() {
         const urlParams = new URLSearchParams(window.location.search);
         const isQuickBuy = urlParams.get('quick_buy') === '1';
         
-        let response;
+        // Prepare order data
+        const orderData = {
+            ...customerInfo,
+            payment_method: paymentMethod,
+            notes: document.querySelector('.form-input[placeholder*="Ghi chú"]')?.value || ''
+        };
         
-        if (isQuickBuy && cartData.items && cartData.items.length > 0) {
-            // Quick buy - add to cart first, then create order
-            const product = cartData.items[0].product;
-            const quantity = cartData.items[0].quantity;
-            
-            // Add to cart
-            await api.addToCart(product.product_id, quantity);
-            
-            // Create order
-            const orderData = {
-                ...customerInfo,
-                payment_method: paymentMethod,
-                notes: document.querySelector('.form-input[placeholder*="Ghi chú"]')?.value || ''
-            };
-            
-            response = await api.createOrder(orderData);
-        } else {
-            // Normal checkout
-            const orderData = {
-                ...customerInfo,
-                payment_method: paymentMethod,
-                notes: document.querySelector('.form-input[placeholder*="Ghi chú"]')?.value || ''
-            };
-            
-            response = await api.createOrder(orderData);
-        }
+        // Store order data and cart data for later
+        window.pendingOrderData = orderData;
+        window.isQuickBuy = isQuickBuy;
         
-        if (response.success) {
-            // Clear customer info from session
-            sessionStorage.removeItem('customerInfo');
+        if (paymentMethod === 'qr') {
+            // For QR payment, show QR popup first, create order after confirmation
+            showQRPopup({
+                total: cartData.total,
+                order_number: 'PENDING' // Temporary order number
+            });
             
-            // Show success based on payment method
-            if (paymentMethod === 'qr') {
-                showQRPopup(response);
-            } else {
-                showSuccessPopup(response);
-            }
-        } else {
-            alert(response.message || 'Đặt hàng thất bại');
+            // Re-enable button
             btn.disabled = false;
             btn.textContent = 'ĐẶT HÀNG';
+        } else {
+            // For COD, create order immediately
+            let response;
+            
+            if (isQuickBuy && cartData.items && cartData.items.length > 0) {
+                // Quick buy - add to cart first, then create order
+                const product = cartData.items[0].product;
+                const quantity = cartData.items[0].quantity;
+                
+                // Add to cart
+                await api.addToCart(product.product_id, quantity);
+                
+                response = await api.createOrder(orderData);
+            } else {
+                // Normal checkout
+                response = await api.createOrder(orderData);
+            }
+            
+            if (response.success) {
+                // Clear customer info from session
+                sessionStorage.removeItem('customerInfo');
+                showSuccessPopup(response);
+            } else {
+                alert(response.message || 'Đặt hàng thất bại');
+                btn.disabled = false;
+                btn.textContent = 'ĐẶT HÀNG';
+            }
         }
     } catch (error) {
         console.error('Error placing order:', error);
@@ -321,7 +335,10 @@ function showQRPopup(orderData) {
     
     // Update QR code with order info
     const qrImage = popup.querySelector('.qr-image');
-    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=ORDER_${orderData.order_number}_${orderData.total}`;
+    const qrData = orderData.order_number === 'PENDING' 
+        ? `PAYMENT_${cartData.total}` 
+        : `ORDER_${orderData.order_number}_${orderData.total}`;
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`;
     
     // Update order details
     const detailValues = popup.querySelectorAll('.detail-value');
@@ -329,13 +346,17 @@ function showQRPopup(orderData) {
     
     // Update order number with copy button
     const orderNumberElement = detailValues[1];
-    orderNumberElement.innerHTML = `${orderData.order_number} 
-        <button class="copy-btn" onclick="copyToClipboard('${orderData.order_number}')">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                <rect x="6" y="6" width="10" height="10" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M4 14V4h10" stroke="currentColor" stroke-width="1.5"/>
-            </svg>
-        </button>`;
+    if (orderData.order_number === 'PENDING') {
+        orderNumberElement.textContent = 'Đang chờ xác nhận...';
+    } else {
+        orderNumberElement.innerHTML = `${orderData.order_number} 
+            <button class="copy-btn" onclick="copyToClipboard('${orderData.order_number}')">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                    <rect x="6" y="6" width="10" height="10" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M4 14V4h10" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+            </button>`;
+    }
     
     popup.style.display = 'flex';
     
@@ -348,9 +369,66 @@ function closeQRPopup() {
     window.location.href = '/';
 }
 
-function completePayment() {
-    document.getElementById('qrPopup').style.display = 'none';
-    showSuccessPopup(window.currentOrder);
+async function completePayment() {
+    try {
+        // Show loading
+        const btn = document.querySelector('#qrPopup .btn-primary');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Đang xử lý...';
+        }
+        
+        // Create order now
+        let response;
+        
+        if (window.isQuickBuy && cartData.items && cartData.items.length > 0) {
+            // Quick buy - add to cart first, then create order
+            const product = cartData.items[0].product;
+            const quantity = cartData.items[0].quantity;
+            
+            // Add to cart
+            await api.addToCart(product.product_id, quantity);
+            
+            response = await api.createOrder(window.pendingOrderData);
+        } else {
+            // Normal checkout
+            response = await api.createOrder(window.pendingOrderData);
+        }
+        
+        if (response.success) {
+            // Clear customer info from session
+            sessionStorage.removeItem('customerInfo');
+            
+            // Update order with paid status
+            await fetch(`${window.API_BASE_URL || 'http://127.0.0.1:8000/api'}/orders/${response.order_id}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    payment_status: 'paid'
+                })
+            });
+            
+            document.getElementById('qrPopup').style.display = 'none';
+            showSuccessPopup(response);
+        } else {
+            alert(response.message || 'Đặt hàng thất bại');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Đã hoàn tất thanh toán';
+            }
+        }
+    } catch (error) {
+        console.error('Error creating order:', error);
+        alert('Có lỗi xảy ra khi tạo đơn hàng');
+        const btn = document.querySelector('#qrPopup .btn-primary');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Đã hoàn tất thanh toán';
+        }
+    }
 }
 
 function showSuccessPopup(orderData) {

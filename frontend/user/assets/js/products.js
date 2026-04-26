@@ -210,7 +210,7 @@ function displayProducts(products) {
                     <img src="${product.image_url || 'https://via.placeholder.com/400x500?text=' + encodeURIComponent(product.name)}" 
                          alt="${product.name}"
                          onerror="this.src='https://via.placeholder.com/400x500?text=No+Image'">
-                    <button class="quick-add-btn" onclick="event.preventDefault(); addToCart(${product.product_id})">
+                    <button class="quick-add-btn" onclick="event.preventDefault(); window.location.href='product_detail.html?id=${product.product_id}'">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M6 10h8M10 6v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
@@ -224,7 +224,7 @@ function displayProducts(products) {
                             <span class="price">${formatPrice(product.price)}đ</span>
                             ${product.old_price && parseFloat(product.old_price) > 0 ? `<span class="old-price">${formatPrice(product.old_price)}đ</span>` : ''}
                         </div>
-                        <button class="cart-icon-btn" onclick="event.preventDefault(); addToCart(${product.product_id})">
+                        <button class="cart-icon-btn" onclick="event.preventDefault(); window.location.href='product_detail.html?id=${product.product_id}'">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path d="M3 3h2l1 9h10l2-7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                                 <circle cx="8" cy="17" r="1" fill="currentColor"/>
@@ -332,18 +332,19 @@ function clearFilters() {
     loadProducts(1);
 }
 
-async function addToCart(productId) {
-    try {
-        const data = await api.addToCart(productId, 1);
-        if (data.success) {
-            updateCartBadge(data.cart_count);
-            showAddToCartPopup();
-        }
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        showAddToCartPopup(); // Show anyway for demo
-    }
-}
+// Function removed - products now redirect to detail page for size/color selection
+// async function addToCart(productId) {
+//     try {
+//         const data = await api.addToCart(productId, 1);
+//         if (data.success) {
+//             updateCartBadge(data.cart_count);
+//             showAddToCartPopup();
+//         }
+//     } catch (error) {
+//         console.error('Error adding to cart:', error);
+//         showAddToCartPopup(); // Show anyway for demo
+//     }
+// }
 
 function updateCartBadge(count) {
     const badge = document.getElementById('cartBadge');
@@ -352,19 +353,20 @@ function updateCartBadge(count) {
     }
 }
 
-function showAddToCartPopup() {
-    const popup = document.getElementById('addToCartPopup');
-    if (!popup) return;
-    
-    popup.classList.add('show');
-    
-    setTimeout(() => {
-        popup.classList.remove('show');
-    }, 3000);
-}
+// Function removed - no longer showing add to cart popup since we redirect to detail page
+// function showAddToCartPopup() {
+//     const popup = document.getElementById('addToCartPopup');
+//     if (!popup) return;
+//     
+//     popup.classList.add('show');
+//     
+//     setTimeout(() => {
+//         popup.classList.remove('show');
+//     }, 3000);
+// }
 
 function formatPrice(price) {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return Math.round(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
 function setupSearchAndFilters() {

@@ -58,6 +58,7 @@ urlpatterns = [
     path('', serve_frontend, {'path': 'user/pages/index.html'}, name='home'),
     
     # Trang đăng nhập/đăng ký
+    path('login', serve_frontend, {'path': 'user/pages/login.html'}, name='login_short'),
     path('login.html', serve_frontend, {'path': 'user/pages/login.html'}, name='login'),
     
     # Trang sản phẩm

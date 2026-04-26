@@ -138,6 +138,31 @@ class APIClient {
     }
 
     /**
+     * Toggle trạng thái chọn của item trong giỏ hàng
+     * PATCH /api/cart/{id}/toggle_select/
+     * @param {number} id - Cart item ID
+     * @param {boolean} selected - Trạng thái chọn
+     */
+    async toggleCartItemSelect(id, selected) {
+        return this.request(`/cart/${id}/toggle_select/`, {
+            method: 'PATCH',
+            body: JSON.stringify({ selected }),
+        });
+    }
+
+    /**
+     * Chọn/bỏ chọn tất cả items trong giỏ hàng
+     * POST /api/cart/select_all/
+     * @param {boolean} selected - Trạng thái chọn
+     */
+    async selectAllCartItems(selected) {
+        return this.request('/cart/select_all/', {
+            method: 'POST',
+            body: JSON.stringify({ selected }),
+        });
+    }
+
+    /**
      * Xóa item khỏi giỏ hàng
      * DELETE /api/cart/{id}/
      * @param {number} id - Cart item ID

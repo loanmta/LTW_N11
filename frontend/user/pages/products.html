@@ -78,8 +78,8 @@
         </div>
     </main>
 
-    <!-- Add to Cart Success Popup -->
-    <div id="addToCartPopup" class="toast-popup">
+    <!-- Popup removed - no longer needed since we redirect to product detail page -->
+    <!-- <div id="addToCartPopup" class="toast-popup">
         <div class="toast-content">
             <div class="toast-icon">
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -92,29 +92,30 @@
                 <p class="toast-message">Thêm vào giỏ hàng thành công</p>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <script>
-        function addToCart(productId) {
-            // This function is now handled by products.js
-            // Keeping this for backward compatibility
-        }
+        // Functions removed - products now redirect to detail page for size/color selection
+        // function addToCart(productId) {
+        //     // This function is now handled by products.js
+        //     // Keeping this for backward compatibility
+        // }
 
-        function updateCartBadge(count) {
-            const badge = document.getElementById('cartBadge');
-            if (badge) {
-                badge.textContent = count;
-            }
-        }
+        // function updateCartBadge(count) {
+        //     const badge = document.getElementById('cartBadge');
+        //     if (badge) {
+        //         badge.textContent = count;
+        //     }
+        // }
 
-        function showAddToCartPopup() {
-            const popup = document.getElementById('addToCartPopup');
-            popup.classList.add('show');
-            
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 3000);
-        }
+        // function showAddToCartPopup() {
+        //     const popup = document.getElementById('addToCartPopup');
+        //     popup.classList.add('show');
+        //     
+        //     setTimeout(() => {
+        //         popup.classList.remove('show');
+        //     }, 3000);
+        // }
     </script>
     </script>
 
