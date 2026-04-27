@@ -51,7 +51,8 @@ function initializeRevenueChart() {
     
     // Extract labels and data
     const labels = revenueByMonth.map(item => item.month);
-    const revenueData = revenueByMonth.map(item => (item.revenue / 1000000).toFixed(1)); // Convert to millions
+    const revenueDataRaw = revenueByMonth.map(item => item.revenue); // Store raw data
+    const revenueData = revenueDataRaw.map(val => (val / 1000000).toFixed(1)); // Convert to millions for display
     
     const data = {
         labels: labels,
@@ -59,6 +60,7 @@ function initializeRevenueChart() {
             {
                 label: 'Doanh thu thực tế',
                 data: revenueData,
+                rawData: revenueDataRaw, // Store raw data for tooltip
                 backgroundColor: '#D32F2F',
                 borderColor: '#D32F2F',
                 borderWidth: 0,
@@ -88,7 +90,9 @@ function initializeRevenueChart() {
                     },
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' triệu VNĐ';
+                            const rawValue = context.dataset.rawData[context.dataIndex];
+                            const valueInMillions = (rawValue / 1000000).toFixed(2);
+                            return context.dataset.label + ': ' + valueInMillions + ' triệu VNĐ';
                         }
                     }
                 }
@@ -225,8 +229,8 @@ async function updateRevenueChart() {
         const currentYear = now.getFullYear();
         const currentMonth = now.getMonth() + 1;
         
-        // Load orders from API
-        const response = await fetch(`${API_BASE_URL}/orders/`, {
+        // Load ALL orders from API (admin can see all)
+        const response = await fetch(`${API_BASE_URL}/orders/?page_size=1000`, {
             credentials: 'include'
         });
         
@@ -238,8 +242,18 @@ async function updateRevenueChart() {
         // Handle both array and object response
         const orders = Array.isArray(data) ? data : (data.results || []);
         
+        console.log('=== ORDERS FROM API ===');
+        console.log('Total orders:', orders.length);
+        
+        // Filter only completed/shipping orders
+        const validOrders = orders.filter(o => o.status === 'completed' || o.status === 'shipping');
+        console.log('Valid orders (completed/shipping):', validOrders.length);
+        const totalRevenue = validOrders.reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+        console.log('Total revenue from valid orders:', totalRevenue);
+        
         let labels = [];
         let revenueData = [];
+        let revenueDataRaw = []; // Store raw data for tooltip
         
         if (filter === 'month') {
             // Filter by month - show last 6 months
@@ -252,19 +266,18 @@ async function updateRevenueChart() {
             }
             
             // Calculate revenue for each month
-            orders.forEach(order => {
-                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
-                    const orderDate = new Date(order.created_at);
-                    const monthKey = `${String(orderDate.getMonth() + 1).padStart(2, '0')}/${orderDate.getFullYear()}`;
-                    
-                    if (monthsData.hasOwnProperty(monthKey)) {
-                        monthsData[monthKey] += parseFloat(order.total) || 0;
-                    }
+            validOrders.forEach(order => {
+                const orderDate = new Date(order.created_at);
+                const monthKey = `${String(orderDate.getMonth() + 1).padStart(2, '0')}/${orderDate.getFullYear()}`;
+                
+                if (monthsData.hasOwnProperty(monthKey)) {
+                    monthsData[monthKey] += parseFloat(order.total) || 0;
                 }
             });
             
             labels = Object.keys(monthsData);
-            revenueData = Object.values(monthsData).map(val => (val / 1000000).toFixed(1));
+            revenueDataRaw = Object.values(monthsData);
+            revenueData = revenueDataRaw.map(val => (val / 1000000).toFixed(1));
             
         } else if (filter === 'quarter') {
             // Filter by quarter - show 4 quarters of current year
@@ -275,25 +288,29 @@ async function updateRevenueChart() {
                 'Q4': 0
             };
             
-            orders.forEach(order => {
-                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
-                    const orderDate = new Date(order.created_at);
-                    if (orderDate.getFullYear() === currentYear) {
-                        const month = orderDate.getMonth() + 1;
-                        let quarter;
-                        
-                        if (month <= 3) quarter = 'Q1';
-                        else if (month <= 6) quarter = 'Q2';
-                        else if (month <= 9) quarter = 'Q3';
-                        else quarter = 'Q4';
-                        
-                        quartersData[quarter] += parseFloat(order.total) || 0;
-                    }
+            validOrders.forEach(order => {
+                const orderDate = new Date(order.created_at);
+                if (orderDate.getFullYear() === currentYear) {
+                    const month = orderDate.getMonth() + 1;
+                    let quarter;
+                    
+                    if (month <= 3) quarter = 'Q1';
+                    else if (month <= 6) quarter = 'Q2';
+                    else if (month <= 9) quarter = 'Q3';
+                    else quarter = 'Q4';
+                    
+                    quartersData[quarter] += parseFloat(order.total) || 0;
                 }
             });
             
             labels = Object.keys(quartersData);
-            revenueData = Object.values(quartersData).map(val => (val / 1000000).toFixed(1));
+            revenueDataRaw = Object.values(quartersData);
+            revenueData = revenueDataRaw.map(val => (val / 1000000).toFixed(1));
+            
+            console.log('=== QUARTER DATA ===');
+            console.log('Labels:', labels);
+            console.log('Raw Data:', revenueDataRaw);
+            console.log('Display Data (millions):', revenueData);
             
         } else if (filter === 'year') {
             // Filter by year - show last 5 years
@@ -304,25 +321,40 @@ async function updateRevenueChart() {
                 yearsData[year] = 0;
             }
             
-            orders.forEach(order => {
-                if ((order.status === 'completed' || order.status === 'shipping') && order.total) {
-                    const orderDate = new Date(order.created_at);
-                    const year = orderDate.getFullYear();
-                    
-                    if (yearsData.hasOwnProperty(year)) {
-                        yearsData[year] += parseFloat(order.total) || 0;
-                    }
+            validOrders.forEach(order => {
+                const orderDate = new Date(order.created_at);
+                const year = orderDate.getFullYear();
+                
+                if (yearsData.hasOwnProperty(year)) {
+                    yearsData[year] += parseFloat(order.total) || 0;
                 }
             });
             
             labels = Object.keys(yearsData);
-            revenueData = Object.values(yearsData).map(val => (val / 1000000).toFixed(1));
+            revenueDataRaw = Object.values(yearsData);
+            revenueData = revenueDataRaw.map(val => (val / 1000000).toFixed(1));
+            
+            console.log('=== YEAR DATA ===');
+            console.log('Labels:', labels);
+            console.log('Raw Data:', revenueDataRaw);
+            console.log('Display Data (millions):', revenueData);
         }
         
-        // Update chart
+        // Update chart with new tooltip callback
         if (revenueChart) {
             revenueChart.data.labels = labels;
             revenueChart.data.datasets[0].data = revenueData;
+            
+            // Store raw data for tooltip
+            revenueChart.data.datasets[0].rawData = revenueDataRaw;
+            
+            // Update tooltip to show correct values from raw data
+            revenueChart.options.plugins.tooltip.callbacks.label = function(context) {
+                const rawValue = context.dataset.rawData[context.dataIndex];
+                const valueInMillions = (rawValue / 1000000).toFixed(2);
+                return context.dataset.label + ': ' + valueInMillions + ' triệu VNĐ';
+            };
+            
             revenueChart.update();
         }
         

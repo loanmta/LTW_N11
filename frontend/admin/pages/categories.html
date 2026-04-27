@@ -145,26 +145,36 @@
 
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-content" style="background: white; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="padding: 24px; border-bottom: 1px solid #E0E0E0; display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="font-size: 20px; font-weight: 600; color: #333; margin: 0;">Xác nhận xóa danh mục</h2>
-                <button class="modal-close" onclick="closeDeleteModal()" style="width: 32px; height: 32px; border: none; background: #F5F5F5; border-radius: 8px; font-size: 20px; color: #666; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+        <div class="modal-content" style="position: relative; background: white; border-radius: 20px; width: 90%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 32px; text-align: center;">
+            <!-- Close Button -->
+            <button class="modal-close" onclick="closeDeleteModal()" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: transparent; font-size: 24px; color: #999; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s;" onmouseover="this.style.color='#D32F2F'" onmouseout="this.style.color='#999'">&times;</button>
+            
+            <!-- Warning Icon -->
+            <div style="width: 80px; height: 80px; background: #FFEBEE; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D32F2F" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
             </div>
-            <div class="modal-body" style="padding: 24px;">
-                <p style="margin: 0 0 10px 0; color: #333;">Bạn có chắc chắn muốn xóa danh mục này?</p>
-                <p style="color: #D32F2F; margin: 0; font-size: 14px;">
-                    <strong>Lưu ý:</strong> Các sản phẩm thuộc danh mục này sẽ không bị xóa.
-                </p>
-                <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                    <button class="btn-secondary" onclick="closeDeleteModal()" 
-                            style="padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; background: #F5F5F5; color: #666;">
-                        Hủy
-                    </button>
-                    <button class="btn-danger" onclick="confirmDelete()" 
-                            style="padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; background: #D32F2F; color: white;">
-                        Xóa
-                    </button>
-                </div>
+            
+            <!-- Title -->
+            <h2 style="font-size: 22px; font-weight: 600; color: #333; margin: 0 0 16px 0;">Xác nhận xóa danh mục?</h2>
+            
+            <!-- Action Buttons -->
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 32px;">
+                <button class="btn-danger" onclick="confirmDelete()" 
+                        style="width: 100%; padding: 14px 24px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; background: #D32F2F; color: white; transition: all 0.3s;"
+                        onmouseover="this.style.background='#B71C1C'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(211,47,47,0.3)'"
+                        onmouseout="this.style.background='#D32F2F'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    Xác nhận xóa
+                </button>
+                <button class="btn-secondary" onclick="closeDeleteModal()" 
+                        style="width: 100%; padding: 14px 24px; border: 2px solid #E0E0E0; background: white; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; color: #666; transition: all 0.3s;"
+                        onmouseover="this.style.background='#F5F5F5'; this.style.borderColor='#D0D0D0'"
+                        onmouseout="this.style.background='white'; this.style.borderColor='#E0E0E0'">
+                    Hủy
+                </button>
             </div>
         </div>
     </div>

@@ -741,13 +741,26 @@ def dashboard_stats(request):
         
         # Revenue by month (last 6 months)
         revenue_by_month = []
+        current_date = datetime.now()
+        
         for i in range(5, -1, -1):
-            month_start = datetime.now().replace(day=1) - timedelta(days=30*i)
-            month_end = month_start + timedelta(days=30)
+            # Calculate month properly
+            target_month = current_date.month - i
+            target_year = current_date.year
+            
+            while target_month <= 0:
+                target_month += 12
+                target_year -= 1
+            
+            # Get first and last day of month
+            from calendar import monthrange
+            month_start = datetime(target_year, target_month, 1)
+            last_day = monthrange(target_year, target_month)[1]
+            month_end = datetime(target_year, target_month, last_day, 23, 59, 59)
             
             revenue = Order.objects.filter(
                 created_at__gte=month_start,
-                created_at__lt=month_end,
+                created_at__lte=month_end,
                 status__in=['completed', 'shipping']
             ).aggregate(total=Sum('total'))['total'] or 0
             

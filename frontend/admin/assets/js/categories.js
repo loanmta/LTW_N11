@@ -244,13 +244,84 @@ async function confirmDelete() {
             throw new Error('Không thể xóa danh mục');
         }
         
-        alert('Đã xóa danh mục thành công');
+        // Show success toast
+        showSuccessToast('Thành công', 'Thêm danh mục mới thành công');
+        
         closeDeleteModal();
         await loadCategories();
     } catch (error) {
         console.error('Error deleting category:', error);
         alert('Lỗi: ' + error.message);
     }
+}
+
+// Show Success Toast
+function showSuccessToast(title, message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        background: white;
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    toast.innerHTML = `
+        <div style="width: 40px; height: 40px; background: #E8F5E9; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M16.667 5L7.5 14.167 3.333 10" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div style="flex: 1;">
+            <div style="font-weight: 600; color: #333; font-size: 15px; margin-bottom: 2px;">${title}</div>
+            <div style="color: #666; font-size: 13px;">${message}</div>
+        </div>
+    `;
+    
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+            toast.remove();
+            style.remove();
+        }, 300);
+    }, 3000);
 }
 
 // Update Category Count
