@@ -49,6 +49,7 @@ class ProductSerializer(serializers.ModelSerializer):
         - category_name: Tên danh mục (read-only, từ category.name)
         - name: Tên sản phẩm
         - slug: URL-friendly name
+        - sku: Mã sản phẩm (auto-generated)
         - description: Mô tả sản phẩm
         - price: Giá hiện tại
         - old_price: Giá cũ (để hiển thị giảm giá)
@@ -77,11 +78,12 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'product_id', 'category', 'category_name', 'name', 'slug', 
+            'product_id', 'category', 'category_name', 'name', 'slug', 'sku',
             'description', 'price', 'old_price', 'stock_quantity', 
             'color', 'size', 'image_url', 'image_2_url', 'image_3_url',
             'is_new', 'is_featured', 'is_active', 'created_at'
         ]
+        read_only_fields = ['sku']
 
 
 class CartItemSerializer(serializers.ModelSerializer):

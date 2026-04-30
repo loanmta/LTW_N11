@@ -97,8 +97,7 @@ function displayProducts(products) {
 // Get Stock Status
 function getStockStatus(quantity) {
     if (quantity === 0) return 'danger';
-    if (quantity < 10) return 'warning';
-    return '';
+    return ''; // Tất cả sản phẩm còn hàng đều màu xanh lá
 }
 
 // Update Stats

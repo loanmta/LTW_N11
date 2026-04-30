@@ -92,6 +92,17 @@
     box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
 }
 
+.form-group input.readonly-input {
+    background-color: white;
+    cursor: not-allowed;
+    color: #666;
+}
+
+.form-group input.readonly-input:focus {
+    border-color: #e0e0e0;
+    box-shadow: none;
+}
+
 .form-group small {
     display: block;
     margin-top: 6px;
@@ -151,10 +162,6 @@
     background: #D32F2F;
     border-color: #D32F2F;
     color: white;
-}
-
-.size-btn.add-size {
-    color: #666;
 }
 
 .color-btn {
@@ -369,7 +376,216 @@
     box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
 }
 
-/* Delete Modal */
+/* Custom Colors */
+.custom-color-btn {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.custom-color-btn:hover {
+    border-color: #D32F2F;
+    transform: scale(1.1);
+}
+
+.custom-color-btn.active::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.custom-color-btn .remove-color {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.custom-color-btn:hover .remove-color {
+    display: flex;
+}
+
+/* Color Picker Modal */
+.color-picker-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.color-picker-modal.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.color-picker-content {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+}
+
+.color-picker-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-picker-close:hover {
+    background: #D32F2F;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.color-picker-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.color-picker-section {
+    margin-bottom: 20px;
+}
+
+.color-picker-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.color-picker-section input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.color-picker-section input[type="text"]:focus {
+    outline: none;
+    border-color: #D32F2F;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.color-picker-section input[type="color"] {
+    width: 100%;
+    height: 60px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.color-picker-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.preview-color {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #ff0000;
+}
+
+#previewText {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.color-picker-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-add-color,
+.btn-cancel-color {
+    flex: 1;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-add-color {
+    background: #D32F2F;
+    border: none;
+    color: white;
+}
+
+.btn-add-color:hover {
+    background: #B71C1C;
+    transform: translateY(-2px);
+}
+
+.btn-cancel-color {
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #666;
+}
+
+.btn-cancel-color:hover {
+    border-color: #999;
+    background: #f5f5f5;
+}
 .delete-modal {
     display: none;
     position: fixed;

@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Mã sản phẩm</label>
-                                    <input type="text" name="sku" placeholder="OS-12345">
+                                    <input type="text" name="sku" readonly class="readonly-input">
                                 </div>
                             </div>
 
@@ -98,18 +98,12 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Giá bán (VNĐ) <span class="required">*</span></label>
-                                <input type="number" name="price" placeholder="500,000" required>
+                                <input type="number" name="price" required>
                             </div>
                             <div class="form-group">
                                 <label>Số lượng tồn kho <span class="required">*</span></label>
-                                <input type="number" name="stock" placeholder="100" required>
+                                <input type="number" name="stock" required>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Giá cũ (VNĐ)</label>
-                            <input type="number" name="old_price" placeholder="700,000">
-                            <small>Để trống nếu không có giá cũ</small>
                         </div>
                         </form>
                     </div>
@@ -134,18 +128,17 @@
                                     <button type="button" class="size-btn" data-size="M">M</button>
                                     <button type="button" class="size-btn" data-size="L">L</button>
                                     <button type="button" class="size-btn" data-size="XL">XL</button>
-                                    <button type="button" class="size-btn add-size">+ Thêm</button>
                                 </div>
                             </div>
 
                             <div class="variant-group">
                                 <label>Bảng màu</label>
-                                <div class="color-options">
+                                <div class="color-options" id="colorOptionsContainer">
                                     <button type="button" class="color-btn" data-color="Đen" style="background: #000"></button>
                                     <button type="button" class="color-btn" data-color="Trắng" style="background: #fff; border: 1px solid #ddd"></button>
                                     <button type="button" class="color-btn" data-color="Đỏ" style="background: #D32F2F"></button>
                                     <button type="button" class="color-btn" data-color="Xanh" style="background: #2196F3"></button>
-                                    <button type="button" class="color-btn add-color">+</button>
+                                    <button type="button" class="color-btn add-color" onclick="openColorPicker()">+</button>
                                 </div>
                             </div>
 
@@ -164,7 +157,7 @@
                                 <circle cx="7" cy="8" r="1.5" fill="#D32F2F"/>
                                 <path d="M2 13l4-4 3 3 5-5 4 4" stroke="#D32F2F" stroke-width="2" stroke-linecap="round"/>
                             </svg>
-                            <h2>Hình ảnh</h2>
+                            <h2>Hình ảnh <span class="required">*</span></h2>
                         </div>
 
                         <div class="image-upload-area">
@@ -258,6 +251,30 @@
             <div class="delete-actions">
                 <button class="btn-confirm-delete" onclick="confirmDelete()">Xác nhận xóa</button>
                 <button class="btn-cancel-delete" onclick="closeDeleteModal()">Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Picker Modal -->
+    <div class="color-picker-modal" id="colorPickerModal">
+        <div class="color-picker-content">
+            <button class="color-picker-close" onclick="closeColorPicker()">×</button>
+            <h3>Chọn màu tùy chỉnh</h3>
+            <div class="color-picker-section">
+                <label>Tên màu:</label>
+                <input type="text" id="colorName" placeholder="Ví dụ: Vàng, Tím, Hồng...">
+            </div>
+            <div class="color-picker-section">
+                <label>Chọn màu:</label>
+                <input type="color" id="colorValue" value="#ff0000">
+            </div>
+            <div class="color-picker-preview">
+                <div class="preview-color" id="previewColor"></div>
+                <span id="previewText">Xem trước màu</span>
+            </div>
+            <div class="color-picker-actions">
+                <button class="btn-add-color" onclick="addCustomColor()">Thêm màu</button>
+                <button class="btn-cancel-color" onclick="closeColorPicker()">Hủy</button>
             </div>
         </div>
     </div>

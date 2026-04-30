@@ -1,6 +1,7 @@
 // Product Form JavaScript
 let selectedSizes = [];
 let selectedColors = [];
+let customColors = [];
 let productId = null;
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -38,8 +39,13 @@ async function loadProductData(id) {
         console.log('Setting category to:', categoryId);
         document.querySelector('[name="category"]').value = categoryId || '';
         
+        // Set SKU
+        document.querySelector('[name="sku"]').value = product.sku || '';
+        
+        // Trigger category change to update size options
+        handleCategoryChange(categoryId);
+        
         document.querySelector('[name="price"]').value = Math.round(product.price) || '';
-        document.querySelector('[name="old_price"]').value = product.old_price ? Math.round(product.old_price) : '';
         document.querySelector('[name="stock"]').value = product.stock_quantity || '';
         document.querySelector('[name="description"]').value = product.description || '';
         
@@ -56,7 +62,14 @@ async function loadProductData(id) {
             selectedColors = product.color.split(',').map(c => c.trim());
             selectedColors.forEach(color => {
                 const btn = document.querySelector(`.color-btn[data-color="${color}"]`);
-                if (btn) btn.classList.add('active');
+                if (btn) {
+                    btn.classList.add('active');
+                } else {
+                    // This might be a custom color, create it
+                    const customColor = { name: color, value: '#999999' }; // Default color for existing custom colors
+                    customColors.push(customColor);
+                    createCustomColorButton(customColor);
+                }
             });
         }
         
@@ -101,22 +114,141 @@ async function loadProductData(id) {
 // Load Categories
 async function loadCategories() {
     try {
+        console.log('Loading categories from:', `${API_BASE_URL}/categories/`);
         const response = await fetch(`${API_BASE_URL}/categories/`, {
             credentials: 'include'
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Categories data:', data);
         const categories = data.results || data;
         
         const select = document.querySelector('[name="category"]');
+        if (!select) {
+            console.error('Category select element not found!');
+            return;
+        }
+        
         select.innerHTML = '<option value="">Chọn danh mục</option>' + 
             categories.map(cat => `<option value="${cat.category_id}">${cat.name}</option>`).join('');
+        
+        console.log('Categories loaded successfully:', categories.length);
     } catch (error) {
         console.error('Error loading categories:', error);
+        alert('Không thể tải danh mục. Vui lòng kiểm tra kết nối server.');
+    }
+}
+
+// Handle Category Change
+async function handleCategoryChange(categoryId) {
+    const sizeOptionsContainer = document.querySelector('.size-options');
+    if (!sizeOptionsContainer) return;
+    
+    // Get category name from select option
+    const categorySelect = document.querySelector('[name="category"]');
+    const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+    const categoryName = selectedOption.text;
+    
+    console.log('Category changed to:', categoryName, 'ID:', categoryId);
+    
+    // Auto-generate SKU when category is selected (only for new products)
+    if (categoryId && !productId) {
+        await generateSKU();
+    }
+    
+    // Check if category is "Phụ kiện"
+    if (categoryName === 'Phụ kiện') {
+        // Show only One Size
+        sizeOptionsContainer.innerHTML = '<button type="button" class="size-btn" data-size="One Size">One Size</button>';
+        
+        // Re-attach event listener
+        const oneSizeBtn = sizeOptionsContainer.querySelector('.size-btn');
+        oneSizeBtn.addEventListener('click', function() {
+            const size = this.dataset.size;
+            this.classList.toggle('active');
+            
+            if (this.classList.contains('active')) {
+                if (!selectedSizes.includes(size)) {
+                    selectedSizes.push(size);
+                }
+            } else {
+                selectedSizes = selectedSizes.filter(s => s !== size);
+            }
+            
+            updateSelectedVariants();
+        });
+    } else {
+        // Show S, M, L, XL for other categories
+        sizeOptionsContainer.innerHTML = `
+            <button type="button" class="size-btn" data-size="S">S</button>
+            <button type="button" class="size-btn" data-size="M">M</button>
+            <button type="button" class="size-btn" data-size="L">L</button>
+            <button type="button" class="size-btn" data-size="XL">XL</button>
+        `;
+        
+        // Re-attach event listeners
+        sizeOptionsContainer.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const size = this.dataset.size;
+                this.classList.toggle('active');
+                
+                if (this.classList.contains('active')) {
+                    if (!selectedSizes.includes(size)) {
+                        selectedSizes.push(size);
+                    }
+                } else {
+                    selectedSizes = selectedSizes.filter(s => s !== size);
+                }
+                
+                updateSelectedVariants();
+            });
+        });
+    }
+    
+    // Clear selected sizes when category changes
+    selectedSizes = [];
+    updateSelectedVariants();
+}
+
+// Generate SKU
+async function generateSKU() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/products/?ordering=-product_id&page_size=1`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        let nextId = 1;
+        if (data.results && data.results.length > 0) {
+            nextId = data.results[0].product_id + 1;
+        }
+        
+        const sku = `OS-${String(nextId).padStart(5, '0')}`;
+        document.querySelector('[name="sku"]').value = sku;
+        
+        console.log('Generated SKU:', sku);
+    } catch (error) {
+        console.error('Error generating SKU:', error);
+        // Fallback to timestamp-based SKU
+        const timestamp = Date.now().toString().slice(-5);
+        document.querySelector('[name="sku"]').value = `OS-${timestamp}`;
     }
 }
 
 // Setup Event Listeners
 function setupEventListeners() {
+    // Category change handler - show/hide size options based on category
+    const categorySelect = document.querySelector('[name="category"]');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            handleCategoryChange(this.value);
+        });
+    }
+    
     // Size buttons
     document.querySelectorAll('.size-btn:not(.add-size)').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -152,6 +284,28 @@ function setupEventListeners() {
             updateSelectedVariants();
         });
     });
+    
+    // Color picker input change
+    const colorValue = document.getElementById('colorValue');
+    const previewColor = document.getElementById('previewColor');
+    const previewText = document.getElementById('previewText');
+    
+    if (colorValue && previewColor && previewText) {
+        colorValue.addEventListener('input', function() {
+            previewColor.style.background = this.value;
+            const colorName = document.getElementById('colorName').value || 'Màu tùy chỉnh';
+            previewText.textContent = `${colorName} (${this.value})`;
+        });
+    }
+    
+    const colorName = document.getElementById('colorName');
+    if (colorName) {
+        colorName.addEventListener('input', function() {
+            const colorValue = document.getElementById('colorValue').value;
+            const previewText = document.getElementById('previewText');
+            previewText.textContent = `${this.value || 'Màu tùy chỉnh'} (${colorValue})`;
+        });
+    }
     
     // Image uploads
     setupImageUpload('mainImage', 'mainImagePreview');
@@ -248,6 +402,13 @@ async function handleFormSubmit(e) {
         return;
     }
     
+    // Validate main image is required
+    const mainImagePreview = document.getElementById('mainImagePreview');
+    if (!mainImagePreview || !mainImagePreview.querySelector('img')) {
+        alert('Vui lòng tải lên hình ảnh chính cho sản phẩm');
+        return;
+    }
+    
     // Generate slug from product name
     const slug = productName
         .toLowerCase()
@@ -259,16 +420,10 @@ async function handleFormSubmit(e) {
         .replace(/-+/g, '-')
         .trim();
     
-    // Get image URLs from preview or use uploaded files
-    let imageUrl = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400';
+    // Get image URLs from preview
+    let imageUrl = mainImagePreview.querySelector('img').src;
     let image2Url = '';
     let image3Url = '';
-    
-    // Check if images were uploaded (as base64 or URL)
-    const mainImagePreview = document.getElementById('mainImagePreview');
-    if (mainImagePreview && mainImagePreview.querySelector('img')) {
-        imageUrl = mainImagePreview.querySelector('img').src;
-    }
     
     const image2Preview = document.getElementById('image2Preview');
     if (image2Preview && image2Preview.querySelector('img')) {
@@ -280,15 +435,12 @@ async function handleFormSubmit(e) {
         image3Url = image3Preview.querySelector('img').src;
     }
     
-    const oldPriceValue = formData.get('old_price');
-    const oldPrice = oldPriceValue && oldPriceValue !== '' ? parseFloat(oldPriceValue) : 0;
-    
     const data = {
         name: productName,
         slug: slug,
         category: parseInt(categoryValue),
         price: price,
-        old_price: oldPrice,
+        old_price: 0,
         stock_quantity: stockQuantity,
         description: formData.get('description')?.trim() || '',
         size: selectedSizes.join(', ') || '',
@@ -444,4 +596,114 @@ async function logout() {
         sessionStorage.clear();
         window.location.href = '/login';
     }
+}
+
+// Color Picker Functions
+function openColorPicker() {
+    document.getElementById('colorPickerModal').classList.add('active');
+    // Reset form
+    document.getElementById('colorName').value = '';
+    document.getElementById('colorValue').value = '#ff0000';
+    document.getElementById('previewColor').style.background = '#ff0000';
+    document.getElementById('previewText').textContent = 'Màu tùy chỉnh (#ff0000)';
+}
+
+function closeColorPicker() {
+    document.getElementById('colorPickerModal').classList.remove('active');
+}
+
+function addCustomColor() {
+    const colorName = document.getElementById('colorName').value.trim();
+    const colorValue = document.getElementById('colorValue').value;
+    
+    if (!colorName) {
+        alert('Vui lòng nhập tên màu');
+        return;
+    }
+    
+    // Check if color already exists
+    if (selectedColors.includes(colorName)) {
+        alert('Màu này đã được chọn');
+        return;
+    }
+    
+    // Check if custom color already exists
+    if (customColors.some(c => c.name === colorName || c.value === colorValue)) {
+        alert('Màu này đã tồn tại');
+        return;
+    }
+    
+    // Add to custom colors
+    const customColor = { name: colorName, value: colorValue };
+    customColors.push(customColor);
+    
+    // Add to selected colors
+    selectedColors.push(colorName);
+    
+    // Create custom color button
+    createCustomColorButton(customColor);
+    
+    // Update variants display
+    updateSelectedVariants();
+    
+    // Close modal
+    closeColorPicker();
+}
+
+function createCustomColorButton(customColor) {
+    const colorOptionsContainer = document.getElementById('colorOptionsContainer');
+    
+    const colorBtn = document.createElement('button');
+    colorBtn.type = 'button';
+    colorBtn.className = 'custom-color-btn active';
+    colorBtn.style.background = customColor.value;
+    colorBtn.dataset.color = customColor.name;
+    
+    // Add remove button
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-color';
+    removeBtn.innerHTML = '×';
+    removeBtn.onclick = function(e) {
+        e.stopPropagation();
+        removeCustomColor(customColor.name);
+    };
+    
+    colorBtn.appendChild(removeBtn);
+    
+    // Add click handler
+    colorBtn.addEventListener('click', function() {
+        const color = this.dataset.color;
+        this.classList.toggle('active');
+        
+        if (this.classList.contains('active')) {
+            if (!selectedColors.includes(color)) {
+                selectedColors.push(color);
+            }
+        } else {
+            selectedColors = selectedColors.filter(c => c !== color);
+        }
+        
+        updateSelectedVariants();
+    });
+    
+    // Insert before the add-color button
+    const addColorBtn = colorOptionsContainer.querySelector('.add-color');
+    colorOptionsContainer.insertBefore(colorBtn, addColorBtn);
+}
+
+function removeCustomColor(colorName) {
+    // Remove from custom colors array
+    customColors = customColors.filter(c => c.name !== colorName);
+    
+    // Remove from selected colors
+    selectedColors = selectedColors.filter(c => c !== colorName);
+    
+    // Remove button from DOM
+    const colorBtn = document.querySelector(`.custom-color-btn[data-color="${colorName}"]`);
+    if (colorBtn) {
+        colorBtn.remove();
+    }
+    
+    // Update variants display
+    updateSelectedVariants();
 }
